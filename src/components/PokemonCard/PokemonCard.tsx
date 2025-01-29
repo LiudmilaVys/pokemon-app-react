@@ -9,8 +9,12 @@ export default class PokemonCard extends Component<PokemonCardProps, unknown> {
     return this.props.pokemon ? (
       <div className="pokemon-card">
         <div>Name: {this.props.pokemon.name}</div>
-        <div>Height: {this.props.pokemon.height}</div>
-        <div>Weight: {this.props.pokemon.weight}</div>
+        {this.props.pokemon.height && (
+          <div>Height: {this.props.pokemon.height}</div>
+        )}
+        {this.props.pokemon.weight && (
+          <div>Weight: {this.props.pokemon.weight}</div>
+        )}
       </div>
     ) : (
       <></>

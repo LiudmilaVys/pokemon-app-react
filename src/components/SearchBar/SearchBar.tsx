@@ -2,8 +2,8 @@ import { localStorageKey } from '../../utils/constants';
 import './SearchBar.css';
 import { ChangeEvent, Component, ReactNode } from 'react';
 
-type SearchBarProps = { onSearchSubmit: (value: string) => void };
-type SearchBarState = { searchValue: string };
+type SearchBarProps = { onSearchSubmit: (value: string | null) => void };
+type SearchBarState = { searchValue: string | null };
 
 export default class SearchBar extends Component<
   SearchBarProps,
@@ -22,10 +22,7 @@ export default class SearchBar extends Component<
 
   componentDidMount() {
     const searchValue = localStorage.getItem(localStorageKey);
-
-    if (searchValue) {
-      this.setState({ searchValue }, this.handleSubmit);
-    }
+    this.setState({ searchValue }, this.handleSubmit);
   }
 
   handleSearchChange(e: ChangeEvent<HTMLInputElement>): void {
@@ -44,7 +41,7 @@ export default class SearchBar extends Component<
           type="text"
           placeholder="ditto"
           className="search-bar__input"
-          value={this.state?.searchValue}
+          value={this.state?.searchValue ?? ''}
           onChange={this.handleSearchChange}
         />
         <input type="button" value="Search" onClick={this.handleSubmit} />
