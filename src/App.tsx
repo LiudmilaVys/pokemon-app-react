@@ -1,35 +1,30 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+import { Component } from 'react';
 import './App.css';
+import PokemonCard from './components/PokemonCard/PokemonCard';
+import SearchBar from './components/SearchBar/SearchBar';
+import * as pokemonService from './services/pokemonService';
+import { Pokemon } from './utils/types';
 
-function App() {
-  const [count, setCount] = useState(0);
+type AppState = { pokemon?: Pokemon | undefined };
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  );
+export default class App extends Component<unknown, AppState> {
+  submitSearch = async (searchValue: string) => {
+    const pokemon = await pokemonService.searchBy(searchValue);
+    this.setState({
+      pokemon: {
+        name: pokemon.name,
+        height: pokemon.height,
+        weight: pokemon.weight,
+      },
+    });
+  };
+
+  render() {
+    return (
+      <>
+        <SearchBar onSearchSubmit={this.submitSearch}></SearchBar>
+        <PokemonCard pokemon={this.state?.pokemon}></PokemonCard>
+      </>
+    );
+  }
 }
-
-export default App;
