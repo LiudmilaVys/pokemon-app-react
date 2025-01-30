@@ -1,50 +1,24 @@
 import { Component } from 'react';
 import './App.css';
 import ErrorButton from './components/ErrorButton/ErrorButton';
-import PokemonList from './components/PokemonList/PokemonList';
+import Results from './components/Results/Results';
 import SearchBar from './components/SearchBar/SearchBar';
-import * as pokemonService from './services/pokemonService';
-import Loader from './utils/Loader/Loader';
-import { Pokemon } from './utils/types';
-import { parsePokemonsResponse } from './utils/utils';
 import { ErrorBoundary } from './utils/ErrorBoundary/ErrorBoundary';
 
-type AppState = { pokemons: Pokemon[]; isLoading: boolean; isError: boolean };
+type AppState = { search: string | undefined; isError: boolean };
 
 export default class App extends Component<unknown, AppState> {
   constructor(props: unknown) {
     super(props);
 
     this.state = {
-      pokemons: [],
-      isLoading: false,
+      search: undefined,
       isError: false,
     };
   }
 
-  submitSearch = async (searchValue: string | null) => {
-    this.setState({ isLoading: true, isError: false }, async () => {
-      if (searchValue) {
-        const pokemonResp = await pokemonService.searchBy(searchValue);
-
-        this.setState({
-          pokemons: [
-            {
-              id: pokemonResp.id,
-              name: pokemonResp.name,
-              height: pokemonResp.height,
-              weight: pokemonResp.weight,
-            },
-          ],
-          isLoading: false,
-        });
-      } else {
-        const pokemonsResp = await pokemonService.getAll();
-        const pokemons = parsePokemonsResponse(pokemonsResp);
-
-        this.setState({ pokemons, isLoading: false });
-      }
-    });
+  submitSearch = async (searchValue: string) => {
+    this.setState({ search: searchValue || '' });
   };
 
   onErrorHandler = () => {
@@ -55,21 +29,17 @@ export default class App extends Component<unknown, AppState> {
     return (
       <>
         <SearchBar onSearchSubmit={this.submitSearch}></SearchBar>
-        <main>
-          {this.state.isLoading ? (
-            <Loader></Loader>
-          ) : (
-            <>
-              <ErrorBoundary fallback={<p>Oops.. Please update search</p>}>
-                <PokemonList
-                  pokemons={this.state?.pokemons}
-                  generateAnError={this.state.isError}
-                ></PokemonList>
-              </ErrorBoundary>
-            </>
-          )}
-        </main>
-        <ErrorButton onError={this.onErrorHandler}></ErrorButton>
+        <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
+          <Results
+            search={this.state.search}
+            generateAnError={this.state.isError}
+          ></Results>
+        </ErrorBoundary>
+        {this.state.isError ? (
+          <></>
+        ) : (
+          <ErrorButton onError={this.onErrorHandler}></ErrorButton>
+        )}
       </>
     );
   }

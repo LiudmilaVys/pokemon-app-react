@@ -2,8 +2,8 @@ import { localStorageKey } from '../../utils/constants';
 import './SearchBar.css';
 import { ChangeEvent, Component, ReactNode } from 'react';
 
-type SearchBarProps = { onSearchSubmit: (value: string | null) => void };
-type SearchBarState = { searchValue: string | null };
+type SearchBarProps = { onSearchSubmit: (value: string) => void };
+type SearchBarState = { searchValue: string };
 
 export default class SearchBar extends Component<
   SearchBarProps,
@@ -21,7 +21,7 @@ export default class SearchBar extends Component<
   }
 
   componentDidMount() {
-    const searchValue = localStorage.getItem(localStorageKey);
+    const searchValue = localStorage.getItem(localStorageKey) || '';
     this.setState({ searchValue }, this.handleSubmit);
   }
 
