@@ -27,11 +27,11 @@ export default class SearchBar extends Component<
 
   handleSearchChange(e: ChangeEvent<HTMLInputElement>): void {
     this.setState({ searchValue: e.target.value });
-    localStorage.setItem(localStorageKey, e.target.value);
   }
 
   handleSubmit(): void {
     this.props.onSearchSubmit(this.state.searchValue);
+    localStorage.setItem(localStorageKey, this.state.searchValue || '');
   }
 
   render(): ReactNode {
