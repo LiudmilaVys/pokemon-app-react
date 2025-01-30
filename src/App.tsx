@@ -1,13 +1,15 @@
 import { Component } from 'react';
 import './App.css';
+import ErrorButton from './components/ErrorButton/ErrorButton';
 import PokemonList from './components/PokemonList/PokemonList';
 import SearchBar from './components/SearchBar/SearchBar';
 import * as pokemonService from './services/pokemonService';
+import Loader from './utils/Loader/Loader';
 import { Pokemon } from './utils/types';
 import { parsePokemonsResponse } from './utils/utils';
-import Loader from './utils/Loader/Loader';
+import { ErrorBoundary } from './utils/ErrorBoundary/ErrorBoundary';
 
-type AppState = { pokemons: Pokemon[]; isLoading: boolean };
+type AppState = { pokemons: Pokemon[]; isLoading: boolean; isError: boolean };
 
 export default class App extends Component<unknown, AppState> {
   constructor(props: unknown) {
@@ -16,11 +18,12 @@ export default class App extends Component<unknown, AppState> {
     this.state = {
       pokemons: [],
       isLoading: false,
+      isError: false,
     };
   }
 
   submitSearch = async (searchValue: string | null) => {
-    this.setState({ isLoading: true }, async () => {
+    this.setState({ isLoading: true, isError: false }, async () => {
       if (searchValue) {
         const pokemonResp = await pokemonService.searchBy(searchValue);
 
@@ -44,15 +47,29 @@ export default class App extends Component<unknown, AppState> {
     });
   };
 
+  onErrorHandler = () => {
+    this.setState({ isError: !this.state.isError });
+  };
+
   render() {
     return (
       <>
         <SearchBar onSearchSubmit={this.submitSearch}></SearchBar>
-        {this.state.isLoading ? (
-          <Loader></Loader>
-        ) : (
-          <PokemonList pokemons={this.state?.pokemons}></PokemonList>
-        )}
+        <main>
+          {this.state.isLoading ? (
+            <Loader></Loader>
+          ) : (
+            <>
+              <ErrorBoundary fallback={<p>Oops.. Please update search</p>}>
+                <PokemonList
+                  pokemons={this.state?.pokemons}
+                  generateAnError={this.state.isError}
+                ></PokemonList>
+              </ErrorBoundary>
+            </>
+          )}
+        </main>
+        <ErrorButton onError={this.onErrorHandler}></ErrorButton>
       </>
     );
   }
