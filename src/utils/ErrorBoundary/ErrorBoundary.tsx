@@ -1,4 +1,4 @@
-import { Component, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
 
 type ErrorBoundaryProps = { fallback: ReactNode; children: ReactNode };
 type ErrorBoundaryState = { hasError: boolean };
@@ -14,6 +14,11 @@ export class ErrorBoundary extends Component<
 
   static getDerivedStateFromError() {
     return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('Caught error:', error);
+    console.log('Component Stack:', errorInfo.componentStack);
   }
 
   render() {
