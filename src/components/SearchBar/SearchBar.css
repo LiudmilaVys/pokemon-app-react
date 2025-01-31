@@ -1,0 +1,10 @@
+.search-bar {
+  margin: 100px 0;
+
+  display: flex;
+  gap: 30px;
+}
+
+.search-bar .search-bar__input {
+  width: 300px;
+}

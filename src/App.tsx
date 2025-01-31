@@ -1,35 +1,46 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+import { Component } from 'react';
 import './App.css';
+import ErrorButton from './components/ErrorButton/ErrorButton';
+import Results from './components/Results/Results';
+import SearchBar from './components/SearchBar/SearchBar';
+import { ErrorBoundary } from './utils/ErrorBoundary/ErrorBoundary';
 
-function App() {
-  const [count, setCount] = useState(0);
+type AppState = { search: string | undefined; isError: boolean };
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  );
+export default class App extends Component<unknown, AppState> {
+  constructor(props: unknown) {
+    super(props);
+
+    this.state = {
+      search: undefined,
+      isError: false,
+    };
+  }
+
+  submitSearch = async (searchValue: string) => {
+    this.setState({ search: searchValue || '' });
+  };
+
+  onErrorHandler = () => {
+    this.setState({ isError: !this.state.isError });
+  };
+
+  render() {
+    return (
+      <>
+        <SearchBar onSearchSubmit={this.submitSearch}></SearchBar>
+        <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
+          <Results
+            search={this.state.search}
+            generateAnError={this.state.isError}
+          ></Results>
+        </ErrorBoundary>
+        {this.state.isError ? (
+          <></>
+        ) : (
+          <ErrorButton onError={this.onErrorHandler}></ErrorButton>
+        )}
+      </>
+    );
+  }
 }
-
-export default App;
