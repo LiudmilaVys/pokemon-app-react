@@ -1,17 +1,11 @@
-import { Component } from 'react';
-
 type ErrorButtonProps = { onError: () => void };
 
-export default class ErrorButton extends Component<ErrorButtonProps, unknown> {
-  render() {
-    return (
-      <div className="error-button">
-        <input
-          type="button"
-          value="Trigger an error"
-          onClick={this.props.onError}
-        ></input>
-      </div>
-    );
-  }
-}
+const ErrorButton = ({ onError }: ErrorButtonProps) => {
+  return (
+    <div className="error-button">
+      <input type="button" value="Trigger an error" onClick={onError}></input>
+    </div>
+  );
+};
+
+export default ErrorButton;

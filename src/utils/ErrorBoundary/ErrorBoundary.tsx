@@ -3,7 +3,7 @@ import { Component, ErrorInfo, ReactNode } from 'react';
 type ErrorBoundaryProps = { fallback: ReactNode; children: ReactNode };
 type ErrorBoundaryState = { hasError: boolean };
 
-export class ErrorBoundary extends Component<
+export default class ErrorBoundary extends Component<
   ErrorBoundaryProps,
   ErrorBoundaryState
 > {

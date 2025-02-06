@@ -1,46 +1,31 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import './App.css';
 import ErrorButton from './components/ErrorButton/ErrorButton';
 import Results from './components/Results/Results';
 import SearchBar from './components/SearchBar/SearchBar';
-import { ErrorBoundary } from './utils/ErrorBoundary/ErrorBoundary';
+import ErrorBoundary from './utils/ErrorBoundary/ErrorBoundary';
 
-type AppState = { search: string | undefined; isError: boolean };
+const App = () => {
+  const [search, setSearch] = useState('');
+  const [isError, setIsError] = useState(false);
 
-export default class App extends Component<unknown, AppState> {
-  constructor(props: unknown) {
-    super(props);
-
-    this.state = {
-      search: undefined,
-      isError: false,
-    };
-  }
-
-  submitSearch = async (searchValue: string) => {
-    this.setState({ search: searchValue || '' });
+  const submitSearch = async (searchValue: string) => {
+    setSearch(searchValue || '');
   };
 
-  onErrorHandler = () => {
-    this.setState({ isError: !this.state.isError });
+  const onErrorHandler = (): void => {
+    setIsError(!isError);
   };
 
-  render() {
-    return (
-      <>
-        <SearchBar onSearchSubmit={this.submitSearch}></SearchBar>
-        <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
-          <Results
-            search={this.state.search}
-            generateAnError={this.state.isError}
-          ></Results>
-        </ErrorBoundary>
-        {this.state.isError ? (
-          <></>
-        ) : (
-          <ErrorButton onError={this.onErrorHandler}></ErrorButton>
-        )}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <SearchBar onSearchSubmit={submitSearch}></SearchBar>
+      <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
+        <Results search={search} generateAnError={isError}></Results>
+      </ErrorBoundary>
+      {isError ? <></> : <ErrorButton onError={onErrorHandler}></ErrorButton>}
+    </>
+  );
+};
+
+export default App;
