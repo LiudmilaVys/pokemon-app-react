@@ -1,4 +1,5 @@
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ITEMS_PER_PAGE } from '../../utils/constants';
 import { Pokemon } from '../../utils/types';
 import PokemonCard from '../PokemonCard/PokemonCard';
@@ -23,7 +24,9 @@ const PokemonList = ({
 
   const pokemonCards = pokemons?.map((pokemon) => (
     <li key={pokemon.id}>
-      <PokemonCard pokemon={pokemon}></PokemonCard>
+      <Link to={`/details/${pokemon.id}`}>
+        <PokemonCard pokemon={pokemon}></PokemonCard>
+      </Link>
     </li>
   ));
 

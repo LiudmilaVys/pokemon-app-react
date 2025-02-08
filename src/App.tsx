@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import './App.css';
 import ErrorButton from './components/ErrorButton/ErrorButton';
+import PokemonDetails from './components/PokemonDetails/PokemonDetails';
 import Results from './components/Results/Results';
 import SearchBar from './components/SearchBar/SearchBar';
+import { searchBy } from './services/pokemonService';
 import ErrorBoundary from './utils/ErrorBoundary/ErrorBoundary';
-
-const NotFound = () => <h2>404 - Not Found</h2>;
 
 const App = () => {
   const [search, setSearch] = useState('');
@@ -20,25 +20,38 @@ const App = () => {
     setIsError(!isError);
   };
 
-  return (
-    <>
-      <BrowserRouter>
-        <SearchBar onSearchSubmit={submitSearch}></SearchBar>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
-                <Results search={search} generateAnError={isError}></Results>
-              </ErrorBoundary>
-            }
-          />
-          <Route path="/pokemon/*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-      {isError ? <></> : <ErrorButton onError={onErrorHandler}></ErrorButton>}
-    </>
-  );
+  const router = createBrowserRouter([
+    {
+      path: '/',
+      element: (
+        <>
+          <SearchBar onSearchSubmit={submitSearch}></SearchBar>
+          <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
+            <Results search={search} generateAnError={isError}></Results>
+            <Outlet />
+          </ErrorBoundary>
+          {isError ? (
+            <></>
+          ) : (
+            <ErrorButton onError={onErrorHandler}></ErrorButton>
+          )}
+        </>
+      ),
+      children: [
+        {
+          path: '/details/:id',
+          element: <PokemonDetails />,
+          loader: async ({ params }) => {
+            const { id } = params;
+            return searchBy(id || '');
+          },
+          errorElement: <h2>404 - Not Found</h2>,
+        },
+      ],
+    },
+  ]);
+
+  return <RouterProvider router={router} />;
 };
 
 export default App;
