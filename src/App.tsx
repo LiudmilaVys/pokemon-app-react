@@ -1,10 +1,10 @@
 import { useState } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import ErrorButton from './components/ErrorButton/ErrorButton';
 import Results from './components/Results/Results';
 import SearchBar from './components/SearchBar/SearchBar';
 import ErrorBoundary from './utils/ErrorBoundary/ErrorBoundary';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 const NotFound = () => <h2>404 - Not Found</h2>;
 
@@ -22,7 +22,7 @@ const App = () => {
 
   return (
     <>
-      <Router>
+      <BrowserRouter>
         <SearchBar onSearchSubmit={submitSearch}></SearchBar>
         <Routes>
           <Route
@@ -35,7 +35,7 @@ const App = () => {
           />
           <Route path="/pokemon/*" element={<NotFound />} />
         </Routes>
-      </Router>
+      </BrowserRouter>
       {isError ? <></> : <ErrorButton onError={onErrorHandler}></ErrorButton>}
     </>
   );

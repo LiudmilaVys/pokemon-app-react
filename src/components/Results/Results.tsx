@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import * as pokemonService from '../../services/pokemonService';
 import Loader from '../../utils/Loader/Loader';
 import { Pokemon } from '../../utils/types';
@@ -10,15 +11,23 @@ type ResultsProps = { search: string | undefined; generateAnError: boolean };
 const Results = ({ search, generateAnError }: ResultsProps) => {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState<number>(0);
-  const nextPage = () => setCurrentPage((prev) => prev + 1);
-  const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 0));
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [currentPage, setCurrentPage] = useState<number>(
+    Number(searchParams.get('page')) || 0
+  );
 
   useEffect(() => {
     if (generateAnError) {
       throw new Error('Enabe ErrorBoundary fallback');
     }
   }, [generateAnError]);
+
+  useEffect(() => {
+    if (searchParams.get('page') !== currentPage.toString()) {
+      setSearchParams({ page: currentPage.toString() });
+    }
+  }, [currentPage, setSearchParams, searchParams]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -59,8 +68,8 @@ const Results = ({ search, generateAnError }: ResultsProps) => {
       <PokemonList
         pokemons={pokemons}
         currentPage={currentPage}
-        prevPage={prevPage}
-        nextPage={nextPage}
+        nextPage={() => setCurrentPage((prev) => prev + 1)}
+        prevPage={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
         setCurrentPage={(pageNumber) => setCurrentPage(pageNumber)}
       ></PokemonList>
     );
