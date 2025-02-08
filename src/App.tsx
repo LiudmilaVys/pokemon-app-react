@@ -4,6 +4,9 @@ import ErrorButton from './components/ErrorButton/ErrorButton';
 import Results from './components/Results/Results';
 import SearchBar from './components/SearchBar/SearchBar';
 import ErrorBoundary from './utils/ErrorBoundary/ErrorBoundary';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+const NotFound = () => <h2>404 - Not Found</h2>;
 
 const App = () => {
   const [search, setSearch] = useState('');
@@ -19,10 +22,20 @@ const App = () => {
 
   return (
     <>
-      <SearchBar onSearchSubmit={submitSearch}></SearchBar>
-      <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
-        <Results search={search} generateAnError={isError}></Results>
-      </ErrorBoundary>
+      <Router>
+        <SearchBar onSearchSubmit={submitSearch}></SearchBar>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
+                <Results search={search} generateAnError={isError}></Results>
+              </ErrorBoundary>
+            }
+          />
+          <Route path="/pokemon/*" element={<NotFound />} />
+        </Routes>
+      </Router>
       {isError ? <></> : <ErrorButton onError={onErrorHandler}></ErrorButton>}
     </>
   );

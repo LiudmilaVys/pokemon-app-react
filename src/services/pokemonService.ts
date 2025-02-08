@@ -1,7 +1,9 @@
-import { POKEMON_API } from '../utils/constants';
+import { ITEMS_PER_PAGE, POKEMON_API } from '../utils/constants';
 
-export const getAll = async () => {
-  const pokemons = await fetch(`${POKEMON_API}/pokemon?offset=0&limit=10`);
+export const getPage = async (pageNumber: number) => {
+  const pokemons = await fetch(
+    `${POKEMON_API}/pokemon?offset=${pageNumber * ITEMS_PER_PAGE}&limit=20`
+  );
   const json = await pokemons.json();
 
   return json.results;

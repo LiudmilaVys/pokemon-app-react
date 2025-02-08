@@ -7,22 +7,25 @@ import PokemonList from '../PokemonList/PokemonList';
 
 type ResultsProps = { search: string | undefined; generateAnError: boolean };
 
-const Results = (props: ResultsProps) => {
+const Results = ({ search, generateAnError }: ResultsProps) => {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const nextPage = () => setCurrentPage((prev) => prev + 1);
+  const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 0));
 
   useEffect(() => {
-    if (props.generateAnError) {
+    if (generateAnError) {
       throw new Error('Enabe ErrorBoundary fallback');
     }
-  }, [props.generateAnError]);
+  }, [generateAnError]);
 
   useEffect(() => {
     setIsLoading(true);
 
-    if (props.search) {
+    if (search) {
       pokemonService
-        .searchBy(props.search)
+        .searchBy(search)
         .then((pokemonResp) => {
           setPokemons([
             {
@@ -40,20 +43,26 @@ const Results = (props: ResultsProps) => {
           setIsLoading(false);
         });
     } else {
-      pokemonService.getAll().then((resp) => {
+      pokemonService.getPage(currentPage).then((resp) => {
         const pokemons = parsePokemonsResponse(resp);
 
         setPokemons(pokemons);
         setIsLoading(false);
       });
     }
-  }, [props.search]);
+  }, [search, currentPage]);
 
   const renderPokemons = () => {
-    return pokemons.length ? (
-      <PokemonList pokemons={pokemons}></PokemonList>
-    ) : (
+    return !!search && pokemons.length ? (
       <p>Not found</p>
+    ) : (
+      <PokemonList
+        pokemons={pokemons}
+        currentPage={currentPage}
+        prevPage={prevPage}
+        nextPage={nextPage}
+        setCurrentPage={(pageNumber) => setCurrentPage(pageNumber)}
+      ></PokemonList>
     );
   };
 
