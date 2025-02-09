@@ -1,0 +1,8 @@
+.pokemon-list__controls {
+  display: flex;
+  gap: 10px;
+}
+
+.pokemon-list__controls input {
+  width: 30px;
+}

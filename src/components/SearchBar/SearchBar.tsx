@@ -1,51 +1,33 @@
+import { ChangeEvent } from 'react';
 import { localStorageKey } from '../../utils/constants';
+import useLocalStorage from '../../utils/useLocalStorage';
 import './SearchBar.css';
-import { ChangeEvent, Component, ReactNode } from 'react';
 
 type SearchBarProps = { onSearchSubmit: (value: string) => void };
-type SearchBarState = { searchValue: string };
 
-export default class SearchBar extends Component<
-  SearchBarProps,
-  SearchBarState
-> {
-  constructor(props: SearchBarProps) {
-    super(props);
+const SearchBar = (props: SearchBarProps) => {
+  const [searchValue, setSearchValue] = useLocalStorage(localStorageKey, '');
 
-    this.handleSearchChange = this.handleSearchChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+  };
 
-    this.state = {
-      searchValue: '',
-    };
-  }
+  return (
+    <div className="search-bar">
+      <input
+        type="text"
+        placeholder="ditto"
+        className="search-bar__input"
+        value={searchValue}
+        onChange={handleSearchChange}
+      />
+      <input
+        type="button"
+        value="Search"
+        onClick={() => props.onSearchSubmit(searchValue)}
+      />
+    </div>
+  );
+};
 
-  componentDidMount() {
-    const searchValue = localStorage.getItem(localStorageKey) || '';
-    this.setState({ searchValue }, this.handleSubmit);
-  }
-
-  handleSearchChange(e: ChangeEvent<HTMLInputElement>): void {
-    this.setState({ searchValue: e.target.value });
-  }
-
-  handleSubmit(): void {
-    this.props.onSearchSubmit(this.state.searchValue);
-    localStorage.setItem(localStorageKey, this.state.searchValue || '');
-  }
-
-  render(): ReactNode {
-    return (
-      <div className="search-bar">
-        <input
-          type="text"
-          placeholder="ditto"
-          className="search-bar__input"
-          value={this.state?.searchValue ?? ''}
-          onChange={this.handleSearchChange}
-        />
-        <input type="button" value="Search" onClick={this.handleSubmit} />
-      </div>
-    );
-  }
-}
+export default SearchBar;

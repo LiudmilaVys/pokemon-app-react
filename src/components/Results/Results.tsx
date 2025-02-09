@@ -1,87 +1,98 @@
-import { Component } from 'react';
-import Loader from '../../utils/Loader/Loader';
-import PokemonList from '../PokemonList/PokemonList';
-import { Pokemon } from '../../utils/types';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import * as pokemonService from '../../services/pokemonService';
+import Loader from '../../utils/Loader/Loader';
+import { Pokemon } from '../../utils/types';
 import { parsePokemonsResponse } from '../../utils/utils';
+import PokemonList from '../PokemonList/PokemonList';
 
 type ResultsProps = { search: string | undefined; generateAnError: boolean };
-type ResultsState = {
-  pokemons: Pokemon[];
-  isLoading: boolean;
-};
 
-export default class Results extends Component<ResultsProps, ResultsState> {
-  constructor(props: ResultsProps) {
-    super(props);
+const Results = ({ search, generateAnError }: ResultsProps) => {
+  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
-    this.state = {
-      pokemons: [],
-      isLoading: false,
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [currentPage, setCurrentPage] = useState<number>(
+    Number(searchParams.get('page')) || 0
+  );
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        navigate('/');
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
     };
-  }
+  }, [ref, navigate]);
 
-  componentDidUpdate(prevProps: ResultsProps): void {
-    if (this.props.generateAnError) {
+  useEffect(() => {
+    if (generateAnError) {
       throw new Error('Enabe ErrorBoundary fallback');
     }
+  }, [generateAnError]);
 
-    if (prevProps.search !== this.props.search) {
-      this.loadPokemons();
+  useEffect(() => {
+    if (searchParams.get('page') !== currentPage.toString()) {
+      setSearchParams({ page: currentPage.toString() });
     }
-  }
+  }, [currentPage, setSearchParams, searchParams]);
 
-  private loadPokemons(isFirstLoad?: boolean) {
-    this.setState({ isLoading: true }, async () => {
-      if (this.props.search) {
-        pokemonService
-          .searchBy(this.props.search)
-          .then((pokemonResp) => {
-            this.setState({
-              pokemons: [
-                {
-                  id: pokemonResp.id,
-                  name: pokemonResp.name,
-                  height: pokemonResp.height,
-                  weight: pokemonResp.weight,
-                },
-              ],
-              isLoading: false,
-            });
-          })
-          .catch(() => {
-            this.setState({ pokemons: [], isLoading: false });
-          });
-      } else {
-        const promises = [pokemonService.getAll()];
+  useEffect(() => {
+    setIsLoading(true);
 
-        if (isFirstLoad) {
-          // time to let you see loading message
-          promises.push(new Promise((resolve) => setTimeout(resolve, 1000)));
-        }
-
-        Promise.all(promises).then((values) => {
-          const pokemons = parsePokemonsResponse(values[0]);
-
-          this.setState({ pokemons, isLoading: false });
+    if (search) {
+      pokemonService
+        .searchBy(search)
+        .then((pokemonResp) => {
+          setPokemons([
+            {
+              id: pokemonResp.id,
+              name: pokemonResp.name,
+              height: pokemonResp.height,
+              weight: pokemonResp.weight,
+            },
+          ]);
+        })
+        .catch(() => {
+          setPokemons([]);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
-      }
-    });
-  }
+    } else {
+      pokemonService.getPage(currentPage).then((resp) => {
+        const pokemons = parsePokemonsResponse(resp);
 
-  render() {
-    return (
-      <main>
-        {this.state.isLoading ? <Loader></Loader> : this.renderPokemons()}
-      </main>
-    );
-  }
+        setPokemons(pokemons);
+        setIsLoading(false);
+      });
+    }
+  }, [search, currentPage]);
 
-  renderPokemons() {
-    return this.state.pokemons.length ? (
-      <PokemonList pokemons={this.state?.pokemons}></PokemonList>
-    ) : (
+  const renderPokemons = () => {
+    return !!search && pokemons.length ? (
       <p>Not found</p>
+    ) : (
+      <div ref={ref}>
+        <PokemonList
+          pokemons={pokemons}
+          currentPage={currentPage}
+          nextPage={() => setCurrentPage((prev) => prev + 1)}
+          prevPage={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+          setCurrentPage={(pageNumber) => setCurrentPage(pageNumber)}
+        ></PokemonList>
+      </div>
     );
-  }
-}
+  };
+
+  return <div>{isLoading ? <Loader></Loader> : renderPokemons()}</div>;
+};
+
+export default Results;
