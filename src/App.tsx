@@ -25,11 +25,16 @@ const App = () => {
       path: '/',
       element: (
         <>
-          <SearchBar onSearchSubmit={submitSearch}></SearchBar>
-          <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
-            <Results search={search} generateAnError={isError}></Results>
-            <Outlet />
-          </ErrorBoundary>
+          <main>
+            <SearchBar onSearchSubmit={submitSearch}></SearchBar>
+            <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
+              <Results search={search} generateAnError={isError}></Results>
+            </ErrorBoundary>
+
+            <aside>
+              <Outlet />
+            </aside>
+          </main>
           {isError ? (
             <></>
           ) : (

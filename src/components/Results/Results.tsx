@@ -75,7 +75,7 @@ const Results = ({ search, generateAnError }: ResultsProps) => {
     );
   };
 
-  return <main>{isLoading ? <Loader></Loader> : renderPokemons()}</main>;
+  return <div>{isLoading ? <Loader></Loader> : renderPokemons()}</div>;
 };
 
 export default Results;
