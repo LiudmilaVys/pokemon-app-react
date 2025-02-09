@@ -20,26 +20,31 @@ const App = () => {
     setIsError(!isError);
   };
 
+  const NotFound = () => <h2>404 - Not Found</h2>;
+
   const router = createBrowserRouter([
     {
       path: '/',
       element: (
         <>
-          <main>
-            <SearchBar onSearchSubmit={submitSearch}></SearchBar>
-            <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
-              <Results search={search} generateAnError={isError}></Results>
-            </ErrorBoundary>
-
-            <aside>
-              <Outlet />
-            </aside>
-          </main>
-          {isError ? (
-            <></>
-          ) : (
-            <ErrorButton onError={onErrorHandler}></ErrorButton>
-          )}
+          <div>
+            <main>
+              <SearchBar onSearchSubmit={submitSearch}></SearchBar>
+              <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
+                <Results search={search} generateAnError={isError}></Results>
+              </ErrorBoundary>
+            </main>
+            {isError ? (
+              <></>
+            ) : (
+              <div className="error">
+                <ErrorButton onError={onErrorHandler}></ErrorButton>
+              </div>
+            )}
+          </div>
+          <aside>
+            <Outlet />
+          </aside>
         </>
       ),
       children: [
@@ -50,10 +55,11 @@ const App = () => {
             const { id } = params;
             return searchBy(id || '');
           },
-          errorElement: <h2>404 - Not Found</h2>,
+          errorElement: <NotFound />,
         },
       ],
     },
+    { path: '*', element: <NotFound /> },
   ]);
 
   return <RouterProvider router={router} />;

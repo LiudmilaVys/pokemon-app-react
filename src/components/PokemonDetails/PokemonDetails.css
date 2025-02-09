@@ -1,0 +1,11 @@
+.pokemon-details {
+  margin: 100px;
+  padding-left: 30px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+
+  border-left: 1px solid;
+}

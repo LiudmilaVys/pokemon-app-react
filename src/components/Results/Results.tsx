@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import * as pokemonService from '../../services/pokemonService';
 import Loader from '../../utils/Loader/Loader';
 import { Pokemon } from '../../utils/types';
@@ -11,11 +11,26 @@ type ResultsProps = { search: string | undefined; generateAnError: boolean };
 const Results = ({ search, generateAnError }: ResultsProps) => {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentPage, setCurrentPage] = useState<number>(
     Number(searchParams.get('page')) || 0
   );
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        navigate('/');
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [ref, navigate]);
 
   useEffect(() => {
     if (generateAnError) {
@@ -65,13 +80,15 @@ const Results = ({ search, generateAnError }: ResultsProps) => {
     return !!search && pokemons.length ? (
       <p>Not found</p>
     ) : (
-      <PokemonList
-        pokemons={pokemons}
-        currentPage={currentPage}
-        nextPage={() => setCurrentPage((prev) => prev + 1)}
-        prevPage={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-        setCurrentPage={(pageNumber) => setCurrentPage(pageNumber)}
-      ></PokemonList>
+      <div ref={ref}>
+        <PokemonList
+          pokemons={pokemons}
+          currentPage={currentPage}
+          nextPage={() => setCurrentPage((prev) => prev + 1)}
+          prevPage={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+          setCurrentPage={(pageNumber) => setCurrentPage(pageNumber)}
+        ></PokemonList>
+      </div>
     );
   };
 

@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
-import { useLoaderData, useNavigation } from 'react-router-dom';
+import { useLoaderData, useNavigate, useNavigation } from 'react-router-dom';
 import Loader from '../../utils/Loader/Loader';
 import { Pokemon } from '../../utils/types';
 import PokemonCard from '../PokemonCard/PokemonCard';
+import './PokemonDetails.css';
 
 const PokemonDetails = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const pokemon = useLoaderData<Pokemon>();
+  const pokemon = useLoaderData<Pokemon | null>();
+  const navigation = useNavigation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setIsLoading(false);
   }, [pokemon]);
-
-  const navigation = useNavigation();
 
   useEffect(() => {
     if (navigation.state === 'loading') {
@@ -20,10 +21,16 @@ const PokemonDetails = () => {
     }
   }, [navigation.state]);
 
-  return isLoading ? (
-    <Loader></Loader>
-  ) : (
-    <PokemonCard pokemon={{ ...pokemon }}> </PokemonCard>
+  if (isLoading) return <Loader />;
+
+  if (!pokemon) return <p>No Pokémon found.</p>;
+
+  return (
+    <div className="pokemon-details">
+      <h3>Details</h3>
+      <PokemonCard pokemon={pokemon} />
+      <button onClick={() => navigate('/')}>Close</button>
+    </div>
   );
 };
 
