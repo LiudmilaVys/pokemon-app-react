@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import './App.css';
-import ErrorButton from './components/ErrorButton/ErrorButton';
 import PokemonDetails from './components/PokemonDetails/PokemonDetails';
 import Results from './components/Results/Results';
 import SearchBar from './components/SearchBar/SearchBar';
@@ -10,14 +9,9 @@ import ErrorBoundary from './utils/ErrorBoundary/ErrorBoundary';
 
 const App = () => {
   const [search, setSearch] = useState('');
-  const [isError, setIsError] = useState(false);
 
   const submitSearch = async (searchValue: string) => {
     setSearch(searchValue || '');
-  };
-
-  const onErrorHandler = (): void => {
-    setIsError(!isError);
   };
 
   const NotFound = () => <h2>404 - Not Found</h2>;
@@ -26,26 +20,15 @@ const App = () => {
     {
       path: '/',
       element: (
-        <>
-          <div>
-            <main>
-              <SearchBar onSearchSubmit={submitSearch}></SearchBar>
-              <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
-                <Results search={search} generateAnError={isError}></Results>
-              </ErrorBoundary>
-            </main>
-            {isError ? (
-              <></>
-            ) : (
-              <div className="error">
-                <ErrorButton onError={onErrorHandler}></ErrorButton>
-              </div>
-            )}
-          </div>
+        <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
+          <main>
+            <SearchBar onSearchSubmit={submitSearch}></SearchBar>
+            <Results search={search}></Results>
+          </main>
           <aside>
             <Outlet />
           </aside>
-        </>
+        </ErrorBoundary>
       ),
       children: [
         {

@@ -21,11 +21,7 @@ const SearchBar = (props: SearchBarProps) => {
         value={searchValue}
         onChange={handleSearchChange}
       />
-      <input
-        type="button"
-        value="Search"
-        onClick={() => props.onSearchSubmit(searchValue)}
-      />
+      <button onClick={() => props.onSearchSubmit(searchValue)}>Search</button>
     </div>
   );
 };

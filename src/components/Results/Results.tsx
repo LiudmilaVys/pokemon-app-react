@@ -3,12 +3,11 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import * as pokemonService from '../../services/pokemonService';
 import Loader from '../../utils/Loader/Loader';
 import { Pokemon } from '../../utils/types';
-import { parsePokemonsResponse } from '../../utils/utils';
 import PokemonList from '../PokemonList/PokemonList';
 
-type ResultsProps = { search: string | undefined; generateAnError: boolean };
+type ResultsProps = { search: string | undefined };
 
-const Results = ({ search, generateAnError }: ResultsProps) => {
+const Results = ({ search }: ResultsProps) => {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -33,12 +32,6 @@ const Results = ({ search, generateAnError }: ResultsProps) => {
   }, [ref, navigate]);
 
   useEffect(() => {
-    if (generateAnError) {
-      throw new Error('Enabe ErrorBoundary fallback');
-    }
-  }, [generateAnError]);
-
-  useEffect(() => {
     if (searchParams.get('page') !== currentPage.toString()) {
       setSearchParams({ page: currentPage.toString() });
     }
@@ -50,15 +43,8 @@ const Results = ({ search, generateAnError }: ResultsProps) => {
     if (search) {
       pokemonService
         .searchBy(search)
-        .then((pokemonResp) => {
-          setPokemons([
-            {
-              id: pokemonResp.id,
-              name: pokemonResp.name,
-              height: pokemonResp.height,
-              weight: pokemonResp.weight,
-            },
-          ]);
+        .then((pokemon) => {
+          setPokemons([pokemon]);
         })
         .catch(() => {
           setPokemons([]);
@@ -67,9 +53,7 @@ const Results = ({ search, generateAnError }: ResultsProps) => {
           setIsLoading(false);
         });
     } else {
-      pokemonService.getPage(currentPage).then((resp) => {
-        const pokemons = parsePokemonsResponse(resp);
-
+      pokemonService.getPage(currentPage).then((pokemons) => {
         setPokemons(pokemons);
         setIsLoading(false);
       });
