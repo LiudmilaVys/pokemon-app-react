@@ -1,20 +1,31 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import './App.css';
+import NotFound from './components/NotFound/NotFound';
 import PokemonDetails from './components/PokemonDetails/PokemonDetails';
-import Results from './components/Results/Results';
 import SearchBar from './components/SearchBar/SearchBar';
-import { searchBy } from './services/pokemonService';
+import SearchResults from './components/SearchResults/SearchResults';
+import { setSearch } from './redux/pokemonReducer';
+import { SEARCH_VALUE_KEY } from './utils/constants';
 import ErrorBoundary from './utils/ErrorBoundary/ErrorBoundary';
+import useLocalStorage from './utils/useLocalStorage';
+import { AppState } from './redux/store';
 
 const App = () => {
-  const [search, setSearch] = useState('');
+  const [savedSearchQuery, setSavedSearchQuery] = useLocalStorage(
+    SEARCH_VALUE_KEY,
+    ''
+  );
+  const searchQuery = useSelector((state: AppState) => state.pokemon.search);
+  const dispatch = useDispatch();
 
-  const submitSearch = async (searchValue: string) => {
-    setSearch(searchValue || '');
-  };
-
-  const NotFound = () => <h2>404 - Not Found</h2>;
+  useEffect(() => {
+    dispatch(setSearch(savedSearchQuery));
+  }, [savedSearchQuery, dispatch]);
+  useEffect(() => {
+    setSavedSearchQuery(savedSearchQuery);
+  }, [searchQuery, savedSearchQuery, setSavedSearchQuery]);
 
   const router = createBrowserRouter([
     {
@@ -22,8 +33,8 @@ const App = () => {
       element: (
         <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
           <main>
-            <SearchBar onSearchSubmit={submitSearch}></SearchBar>
-            <Results search={search}></Results>
+            <SearchBar></SearchBar>
+            <SearchResults></SearchResults>
           </main>
           <aside>
             <Outlet />
@@ -34,10 +45,6 @@ const App = () => {
         {
           path: '/details/:id',
           element: <PokemonDetails />,
-          loader: async ({ params }) => {
-            const { id } = params;
-            return searchBy(id || '');
-          },
           errorElement: <NotFound />,
         },
       ],

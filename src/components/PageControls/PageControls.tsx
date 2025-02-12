@@ -1,15 +1,15 @@
 import { ChangeEvent, KeyboardEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { next, prev, set } from '../../redux/paginationReducer';
-import { RootState } from '../../redux/store';
+import { AppState } from '../../redux/store';
 import { ITEMS_PER_PAGE } from '../../utils/constants';
 
 const PageControls = () => {
   const currentPage = useSelector(
-    (state: RootState) => state.pagination.currentPage
+    (state: AppState) => state.pagination.currentPage
   );
   const pokemonCount = useSelector(
-    (state: RootState) => state.pokemon.pokemons.length
+    (state: AppState) => state.pokemon.pokemons.length
   );
   const dispatch = useDispatch();
 

@@ -1,25 +1,13 @@
-import { useEffect, useState } from 'react';
-import { useLoaderData, useNavigate, useNavigation } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useSearchByQuery } from '../../redux/pokemonApi';
 import Loader from '../../utils/Loader/Loader';
-import { Pokemon } from '../../utils/types';
 import PokemonCard from '../PokemonCard/PokemonCard';
 import './PokemonDetails.css';
 
 const PokemonDetails = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const pokemon = useLoaderData<Pokemon | null>();
-  const navigation = useNavigation();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setIsLoading(false);
-  }, [pokemon]);
-
-  useEffect(() => {
-    if (navigation.state === 'loading') {
-      setIsLoading(true);
-    }
-  }, [navigation.state]);
+  const { id } = useParams();
+  const { data: pokemon, isLoading } = useSearchByQuery(id);
 
   if (isLoading) return <Loader />;
 

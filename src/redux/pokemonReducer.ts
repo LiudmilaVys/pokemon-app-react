@@ -19,6 +19,6 @@ const pokemonSlice = createSlice({
   },
 });
 
-export const { add } = pokemonSlice.actions;
+export const { setSearch, add } = pokemonSlice.actions;
 
 export default pokemonSlice.reducer;
