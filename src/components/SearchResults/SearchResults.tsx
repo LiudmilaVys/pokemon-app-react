@@ -2,7 +2,11 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useGetAllQuery, useSearchByQuery } from '../../redux/pokemonApi';
-import { setPokemons } from '../../redux/pokemonReducer';
+import {
+  deselectPokemon,
+  selectPokemon,
+  setPokemons,
+} from '../../redux/pokemonReducer';
 import { AppState } from '../../redux/store';
 import { Pokemon } from '../../utils/types';
 import Loader from '../Loader/Loader';
@@ -10,6 +14,10 @@ import NotFound from '../NotFound/NotFound';
 import PageControls from '../PageControls/PageControls';
 
 const SearchResults = () => {
+  const pokemons = useSelector((state: AppState) => state.pokemon.pokemons);
+  const selectedPokemonIds = useSelector(
+    (state: AppState) => state.pokemon.selectedPokemonIds
+  );
   const searchQuery = useSelector((state: AppState) => state.pokemon.search);
   const currentPage = useSelector(
     (state: AppState) => state.pagination.currentPage
@@ -23,10 +31,8 @@ const SearchResults = () => {
   const notFound = searchQuery
     ? searchQueryResult.error
     : allPokemonsResult.error;
-  const pokemons = useMemo(() => {
-    return searchQuery
-      ? [searchQueryResult.data as Pokemon]
-      : allPokemonsResult.data;
+  const loadedPokemons = useMemo(() => {
+    return searchQuery ? [searchQueryResult.data] : allPokemonsResult.data;
   }, [searchQuery, searchQueryResult.data, allPokemonsResult.data]);
   const isLoading = searchQuery
     ? searchQueryResult.isLoading
@@ -35,9 +41,9 @@ const SearchResults = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     if (!isLoading) {
-      dispatch(setPokemons(pokemons));
+      dispatch(setPokemons(loadedPokemons as Pokemon[]));
     }
-  }, [pokemons, isLoading, dispatch]);
+  }, [loadedPokemons, isLoading, dispatch]);
 
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -54,6 +60,18 @@ const SearchResults = () => {
     };
   }, [ref, navigate]);
 
+  const toggleCheckbox = (id: string) => {
+    if (isChecked(id)) {
+      dispatch(deselectPokemon(id));
+    } else {
+      dispatch(selectPokemon(id));
+    }
+  };
+
+  const isChecked = (id: string) => {
+    return selectedPokemonIds.indexOf(id) > -1;
+  };
+
   const renderPokemons = () => {
     if (notFound) {
       return <NotFound></NotFound>;
@@ -63,11 +81,18 @@ const SearchResults = () => {
       <div ref={ref}>
         <>
           <ul>
-            {pokemons?.map((pokemon) => (
-              <li key={pokemon.id}>
-                <Link to={`/details/${pokemon.id}`}> {pokemon.name} </Link>
-              </li>
-            ))}
+            {pokemons?.map((pokemon: Pokemon) => {
+              return (
+                <li key={pokemon.id}>
+                  <input
+                    type="checkbox"
+                    defaultChecked={isChecked(pokemon.id)}
+                    onChange={() => toggleCheckbox(pokemon.id)}
+                  ></input>
+                  <Link to={`/details/${pokemon.id}`}> {pokemon.name} </Link>
+                </li>
+              );
+            })}
           </ul>
           {!searchQuery && <PageControls></PageControls>}
         </>

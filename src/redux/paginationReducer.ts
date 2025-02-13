@@ -1,10 +1,16 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+interface PaginationState {
+  currentPage: number;
+}
+
+const initialState: PaginationState = {
+  currentPage: 0,
+};
 
 const paginationSlice = createSlice({
   name: 'pagination',
-  initialState: {
-    currentPage: 0,
-  },
+  initialState,
   reducers: {
     prev: (state) => {
       state.currentPage = Math.max(state.currentPage - 1, 0);
@@ -12,7 +18,7 @@ const paginationSlice = createSlice({
     next: (state) => {
       state.currentPage += 1;
     },
-    set: (state, action) => {
+    set: (state, action: PayloadAction<number>) => {
       if (Number.isInteger(action.payload)) {
         state.currentPage = Math.max(action.payload, 0);
       }

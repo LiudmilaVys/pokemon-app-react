@@ -21,7 +21,7 @@ const PokemonDetails = () => {
 
   useEffect(() => {
     if (data) {
-      dispatch(setDetails(data));
+      dispatch(setDetails(data as Pokemon));
       setIsLoading(false);
     }
   }, [data, dispatch]);
