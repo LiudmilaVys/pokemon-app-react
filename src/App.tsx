@@ -9,6 +9,8 @@ import SearchBar from './components/SearchBar/SearchBar';
 import SearchResults from './components/SearchResults/SearchResults';
 import { setSearch } from './redux/pokemonReducer';
 import { AppState } from './redux/store';
+import ThemeProvider from './theme/ThemeProvider';
+import ThemeSwitch from './theme/ThemeSwitch';
 import { SEARCH_VALUE_KEY } from './utils/constants';
 import useLocalStorage from './utils/useLocalStorage';
 
@@ -33,6 +35,7 @@ const App = () => {
       element: (
         <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
           <main>
+            <ThemeSwitch></ThemeSwitch>
             <SearchBar></SearchBar>
             <SearchResults></SearchResults>
           </main>
@@ -52,7 +55,11 @@ const App = () => {
     { path: '*', element: <NotFound /> },
   ]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>
+  );
 };
 
 export default App;

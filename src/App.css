@@ -1,5 +1,19 @@
+:root {
+  --bg-color: white;
+  --text-color: black;
+}
+
+[data-theme='dark'] {
+  --bg-color: black;
+  --text-color: white;
+}
+
 body {
   height: 100vh;
+
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease-in-out;
 }
 
 ul {
