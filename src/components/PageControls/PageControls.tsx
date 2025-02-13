@@ -1,17 +1,26 @@
-import { ChangeEvent, KeyboardEvent } from 'react';
+import { ChangeEvent, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 import { next, prev, set } from '../../redux/paginationReducer';
 import { AppState } from '../../redux/store';
 import { ITEMS_PER_PAGE } from '../../utils/constants';
+import './PageControls.css';
 
 const PageControls = () => {
+  const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = useSelector(
     (state: AppState) => state.pagination.currentPage
   );
   const pokemonCount = useSelector(
     (state: AppState) => state.pokemon.pokemons.length
   );
-  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (currentPage !== Number(searchParams.get('page'))) {
+      setSearchParams({ page: currentPage.toString() });
+    }
+  }, [currentPage, searchParams, setSearchParams]);
 
   return (
     <div className="pokemon-list__controls">
@@ -25,11 +34,6 @@ const PageControls = () => {
         onChange={(event: ChangeEvent<HTMLInputElement>) =>
           dispatch(set(Number(event.target.value)))
         }
-        onKeyDown={(event: KeyboardEvent<HTMLInputElement>) => {
-          if (event.key === 'Enter') {
-            //  dispatch(triggerSearch());
-          }
-        }}
       ></input>
       <button
         onClick={() => dispatch(next())}

@@ -23,7 +23,7 @@ export const pokemonApi = createApi({
         weight: number;
       }) => {
         if (response.status === 404) {
-          return { notFound: 'Pokemon not found!' };
+          return { error: 'Pokemon not found!' };
         }
 
         return {

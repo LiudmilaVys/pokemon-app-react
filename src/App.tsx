@@ -2,15 +2,15 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import './App.css';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import NotFound from './components/NotFound/NotFound';
 import PokemonDetails from './components/PokemonDetails/PokemonDetails';
 import SearchBar from './components/SearchBar/SearchBar';
 import SearchResults from './components/SearchResults/SearchResults';
 import { setSearch } from './redux/pokemonReducer';
-import { SEARCH_VALUE_KEY } from './utils/constants';
-import ErrorBoundary from './utils/ErrorBoundary/ErrorBoundary';
-import useLocalStorage from './utils/useLocalStorage';
 import { AppState } from './redux/store';
+import { SEARCH_VALUE_KEY } from './utils/constants';
+import useLocalStorage from './utils/useLocalStorage';
 
 const App = () => {
   const [savedSearchQuery, setSavedSearchQuery] = useLocalStorage(
@@ -24,8 +24,8 @@ const App = () => {
     dispatch(setSearch(savedSearchQuery));
   }, [savedSearchQuery, dispatch]);
   useEffect(() => {
-    setSavedSearchQuery(savedSearchQuery);
-  }, [searchQuery, savedSearchQuery, setSavedSearchQuery]);
+    setSavedSearchQuery(searchQuery);
+  }, [searchQuery, setSavedSearchQuery]);
 
   const router = createBrowserRouter([
     {

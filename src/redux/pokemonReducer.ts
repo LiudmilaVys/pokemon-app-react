@@ -5,20 +5,22 @@ const pokemonSlice = createSlice({
   initialState: {
     search: '',
     pokemons: [],
+    details: {},
     selectedPokemonIds: [],
   },
   reducers: {
-    // triggerSearch: (state) => {},
     setSearch: (state, action) => {
       state.search = action.payload;
     },
-    add: (state) => {
-      state.pokemons.push();
+    setPokemons: (state, action) => {
+      state.pokemons = action.payload;
     },
-    // remove: (state) => {},
+    setDetails: (state, action) => {
+      state.details = action.payload;
+    },
   },
 });
 
-export const { setSearch, add } = pokemonSlice.actions;
+export const { setSearch, setPokemons, setDetails } = pokemonSlice.actions;
 
 export default pokemonSlice.reducer;

@@ -1,10 +1,11 @@
-import { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useMemo, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useGetAllQuery, useSearchByQuery } from '../../redux/pokemonApi';
+import { setPokemons } from '../../redux/pokemonReducer';
 import { AppState } from '../../redux/store';
-import Loader from '../../utils/Loader/Loader';
 import { Pokemon } from '../../utils/types';
+import Loader from '../Loader/Loader';
 import NotFound from '../NotFound/NotFound';
 import PageControls from '../PageControls/PageControls';
 
@@ -22,12 +23,21 @@ const SearchResults = () => {
   const notFound = searchQuery
     ? searchQueryResult.error
     : allPokemonsResult.error;
-  const pokemons = searchQuery
-    ? [searchQueryResult.data as Pokemon]
-    : allPokemonsResult.data;
+  const pokemons = useMemo(() => {
+    return searchQuery
+      ? [searchQueryResult.data as Pokemon]
+      : allPokemonsResult.data;
+  }, [searchQuery, searchQueryResult.data, allPokemonsResult.data]);
   const isLoading = searchQuery
     ? searchQueryResult.isLoading
     : allPokemonsResult.isLoading;
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (!isLoading) {
+      dispatch(setPokemons(pokemons));
+    }
+  }, [pokemons, isLoading, dispatch]);
 
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -45,12 +55,6 @@ const SearchResults = () => {
   }, [ref, navigate]);
 
   const renderPokemons = () => {
-    const pokemonList = pokemons?.map((pokemon) => (
-      <li key={pokemon.id}>
-        <Link to={`/details/${pokemon.id}`}> {pokemon.name} </Link>
-      </li>
-    ));
-
     if (notFound) {
       return <NotFound></NotFound>;
     }
@@ -58,7 +62,13 @@ const SearchResults = () => {
     return (
       <div ref={ref}>
         <>
-          <ul>{pokemonList}</ul>
+          <ul>
+            {pokemons?.map((pokemon) => (
+              <li key={pokemon.id}>
+                <Link to={`/details/${pokemon.id}`}> {pokemon.name} </Link>
+              </li>
+            ))}
+          </ul>
           {!searchQuery && <PageControls></PageControls>}
         </>
       </div>
