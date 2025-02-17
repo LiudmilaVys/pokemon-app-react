@@ -13,14 +13,23 @@ const paginationSlice = createSlice({
   initialState,
   reducers: {
     prev: (state) => {
-      state.currentPage = Math.max(state.currentPage - 1, 0);
+      return {
+        ...state,
+        currentPage: Math.max(state.currentPage - 1, 0),
+      };
     },
     next: (state) => {
-      state.currentPage += 1;
+      return {
+        ...state,
+        currentPage: state.currentPage + 1,
+      };
     },
     set: (state, action: PayloadAction<number>) => {
       if (Number.isInteger(action.payload)) {
-        state.currentPage = Math.max(action.payload, 0);
+        return {
+          ...state,
+          currentPage: Math.max(action.payload, 0),
+        };
       }
     },
   },

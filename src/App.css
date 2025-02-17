@@ -16,6 +16,16 @@ body {
   transition: background-color 0.3s ease-in-out;
 }
 
+main {
+  margin: auto;
+  margin-top: 10vh;
+}
+
+aside {
+  position: absolute;
+  left: 70vw;
+}
+
 ul {
   list-style-type: none;
 }
@@ -32,8 +42,6 @@ a:hover {
   height: 100%;
 
   display: flex;
-  align-items: baseline;
-  justify-content: center;
 }
 
 .error {

@@ -1,16 +1,13 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './App.css';
-import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
+import MainView from './components/MainView/MainView';
 import NotFound from './components/NotFound/NotFound';
 import PokemonDetails from './components/PokemonDetails/PokemonDetails';
-import SearchBar from './components/SearchBar/SearchBar';
-import SearchResults from './components/SearchResults/SearchResults';
 import { setSearch } from './redux/pokemonReducer';
 import { AppState } from './redux/store';
 import ThemeProvider from './theme/ThemeProvider';
-import ThemeSwitch from './theme/ThemeSwitch';
 import { SEARCH_VALUE_KEY } from './utils/constants';
 import useLocalStorage from './utils/useLocalStorage';
 
@@ -32,18 +29,7 @@ const App = () => {
   const router = createBrowserRouter([
     {
       path: '/',
-      element: (
-        <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
-          <main>
-            <ThemeSwitch></ThemeSwitch>
-            <SearchBar></SearchBar>
-            <SearchResults></SearchResults>
-          </main>
-          <aside>
-            <Outlet />
-          </aside>
-        </ErrorBoundary>
-      ),
+      element: <MainView></MainView>,
       children: [
         {
           path: '/details/:id',

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSearchByQuery } from '../../redux/pokemonApi';
@@ -16,19 +16,13 @@ const PokemonDetails = () => {
   const pokemon = useSelector((state: AppState) => state.pokemon.details);
 
   const { id } = useParams();
-  const [isLoading, setIsLoading] = useState(true);
-  const { data } = useSearchByQuery(id, { skip: !id });
+  const { data, isFetching } = useSearchByQuery(id, { skip: !id });
 
   useEffect(() => {
     if (data) {
       dispatch(setDetails(data as Pokemon));
-      setIsLoading(false);
     }
   }, [data, dispatch]);
-
-  useEffect(() => {
-    setIsLoading(true);
-  }, [id]);
 
   useEffect(() => {
     return () => {
@@ -37,9 +31,9 @@ const PokemonDetails = () => {
   }, [id, dispatch]);
 
   return (
-    <div className="pokemon-details">
+    <div className="pokemon-details fade-in">
       <h3>Details</h3>
-      {isLoading ? (
+      {isFetching ? (
         <Loader />
       ) : pokemon ? (
         <PokemonCard pokemon={pokemon as Pokemon} />

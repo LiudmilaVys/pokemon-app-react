@@ -1,0 +1,35 @@
+@import '../../mixins.css';
+
+.download-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+
+  padding: 15px;
+  box-sizing: border-box;
+
+  width: 100%;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  text-align: center;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme='dark'] .download-controls {
+  box-shadow: 0 -2px 10px rgba(255, 255, 255, 0.2);
+}
+
+.download-controls__btn-group {
+  display: flex;
+  gap: 10px;
+}
+
+.download-controls__btn {
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+}
