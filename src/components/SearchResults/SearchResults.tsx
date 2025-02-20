@@ -26,7 +26,7 @@ const SearchResults = () => {
   };
 
   const isChecked = (pokemon: Pokemon) => {
-    return selectedPokemons.indexOf(pokemon) > -1;
+    return !!selectedPokemons.find((selected) => selected.id === pokemon.id);
   };
 
   const renderPokemons = () => {

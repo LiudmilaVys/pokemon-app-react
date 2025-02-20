@@ -6,6 +6,7 @@ import { setDetails } from '../../redux/pokemonReducer';
 import { AppState } from '../../redux/store';
 import { Pokemon } from '../../utils/types';
 import Loader from '../Loader/Loader';
+import NotFound from '../NotFound/NotFound';
 import PokemonCard from '../PokemonCard/PokemonCard';
 import './PokemonDetails.css';
 
@@ -38,7 +39,7 @@ const PokemonDetails = () => {
       ) : pokemon ? (
         <PokemonCard pokemon={pokemon as Pokemon} />
       ) : (
-        <p>No Pokémon found.</p>
+        <NotFound></NotFound>
       )}
       <button onClick={() => navigate('/')}>Close</button>
     </div>
