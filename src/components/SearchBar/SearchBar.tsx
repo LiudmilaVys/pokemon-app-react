@@ -1,15 +1,22 @@
-import { ChangeEvent } from 'react';
-import { localStorageKey } from '../../utils/constants';
-import useLocalStorage from '../../utils/useLocalStorage';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSearch } from '../../redux/pokemonReducer';
+import { AppState } from '../../redux/store';
 import './SearchBar.css';
 
-type SearchBarProps = { onSearchSubmit: (value: string) => void };
+const SearchBar = () => {
+  const searchQuery = useSelector((state: AppState) => state.pokemon.search);
+  const dispatch = useDispatch();
+  const [input, setInput] = useState(searchQuery);
 
-const SearchBar = (props: SearchBarProps) => {
-  const [searchValue, setSearchValue] = useLocalStorage(localStorageKey, '');
+  useEffect(() => {
+    setInput(searchQuery);
+  }, [searchQuery]);
 
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(e.target.value);
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      dispatch(setSearch((event.target as HTMLInputElement).value));
+    }
   };
 
   return (
@@ -18,14 +25,13 @@ const SearchBar = (props: SearchBarProps) => {
         type="text"
         placeholder="ditto"
         className="search-bar__input"
-        value={searchValue}
-        onChange={handleSearchChange}
+        value={input}
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          setInput(e.target.value)
+        }
+        onKeyDown={handleKeyDown}
       />
-      <input
-        type="button"
-        value="Search"
-        onClick={() => props.onSearchSubmit(searchValue)}
-      />
+      <button onClick={() => dispatch(setSearch(input))}>Search</button>
     </div>
   );
 };

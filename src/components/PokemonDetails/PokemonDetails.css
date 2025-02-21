@@ -1,3 +1,5 @@
+@import '../../mixins.css';
+
 .pokemon-details {
   margin: 100px;
   padding-left: 30px;

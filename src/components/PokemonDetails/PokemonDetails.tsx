@@ -1,34 +1,46 @@
-import { useEffect, useState } from 'react';
-import { useLoaderData, useNavigate, useNavigation } from 'react-router-dom';
-import Loader from '../../utils/Loader/Loader';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useSearchByQuery } from '../../redux/pokemonApi';
+import { setDetails } from '../../redux/pokemonReducer';
+import { AppState } from '../../redux/store';
 import { Pokemon } from '../../utils/types';
+import Loader from '../Loader/Loader';
+import NotFound from '../NotFound/NotFound';
 import PokemonCard from '../PokemonCard/PokemonCard';
 import './PokemonDetails.css';
 
 const PokemonDetails = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const pokemon = useLoaderData<Pokemon | null>();
-  const navigation = useNavigation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const pokemon = useSelector((state: AppState) => state.pokemon.details);
+
+  const { id } = useParams();
+  const { data, isFetching } = useSearchByQuery(id, { skip: !id });
 
   useEffect(() => {
-    setIsLoading(false);
-  }, [pokemon]);
-
-  useEffect(() => {
-    if (navigation.state === 'loading') {
-      setIsLoading(true);
+    if (data) {
+      dispatch(setDetails(data as Pokemon));
     }
-  }, [navigation.state]);
+  }, [data, dispatch]);
 
-  if (isLoading) return <Loader />;
-
-  if (!pokemon) return <p>No Pokémon found.</p>;
+  useEffect(() => {
+    return () => {
+      dispatch(setDetails(undefined));
+    };
+  }, [id, dispatch]);
 
   return (
-    <div className="pokemon-details">
+    <div className="pokemon-details fade-in">
       <h3>Details</h3>
-      <PokemonCard pokemon={pokemon} />
+      {isFetching ? (
+        <Loader />
+      ) : pokemon ? (
+        <PokemonCard pokemon={pokemon as Pokemon} />
+      ) : (
+        <NotFound></NotFound>
+      )}
       <button onClick={() => navigate('/')}>Close</button>
     </div>
   );

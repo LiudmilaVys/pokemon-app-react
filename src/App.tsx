@@ -1,60 +1,39 @@
-import { useState } from 'react';
-import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './App.css';
-import ErrorButton from './components/ErrorButton/ErrorButton';
+import MainView from './components/MainView/MainView';
+import NotFound from './components/NotFound/NotFound';
 import PokemonDetails from './components/PokemonDetails/PokemonDetails';
-import Results from './components/Results/Results';
-import SearchBar from './components/SearchBar/SearchBar';
-import { searchBy } from './services/pokemonService';
-import ErrorBoundary from './utils/ErrorBoundary/ErrorBoundary';
+import { setSearch } from './redux/pokemonReducer';
+import { AppState } from './redux/store';
+import ThemeProvider from './theme/ThemeProvider';
+import { SEARCH_VALUE_KEY } from './utils/constants';
+import useLocalStorage from './utils/useLocalStorage';
 
 const App = () => {
-  const [search, setSearch] = useState('');
-  const [isError, setIsError] = useState(false);
+  const [savedSearchQuery, setSavedSearchQuery] = useLocalStorage(
+    SEARCH_VALUE_KEY,
+    ''
+  );
+  const searchQuery = useSelector((state: AppState) => state.pokemon.search);
+  const dispatch = useDispatch();
 
-  const submitSearch = async (searchValue: string) => {
-    setSearch(searchValue || '');
-  };
-
-  const onErrorHandler = (): void => {
-    setIsError(!isError);
-  };
-
-  const NotFound = () => <h2>404 - Not Found</h2>;
+  useEffect(() => {
+    dispatch(setSearch(savedSearchQuery));
+  }, [savedSearchQuery, dispatch]);
+  useEffect(() => {
+    setSavedSearchQuery(searchQuery);
+  }, [searchQuery, setSavedSearchQuery]);
 
   const router = createBrowserRouter([
     {
       path: '/',
-      element: (
-        <>
-          <div>
-            <main>
-              <SearchBar onSearchSubmit={submitSearch}></SearchBar>
-              <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
-                <Results search={search} generateAnError={isError}></Results>
-              </ErrorBoundary>
-            </main>
-            {isError ? (
-              <></>
-            ) : (
-              <div className="error">
-                <ErrorButton onError={onErrorHandler}></ErrorButton>
-              </div>
-            )}
-          </div>
-          <aside>
-            <Outlet />
-          </aside>
-        </>
-      ),
+      element: <MainView></MainView>,
       children: [
         {
           path: '/details/:id',
           element: <PokemonDetails />,
-          loader: async ({ params }) => {
-            const { id } = params;
-            return searchBy(id || '');
-          },
           errorElement: <NotFound />,
         },
       ],
@@ -62,7 +41,11 @@ const App = () => {
     { path: '*', element: <NotFound /> },
   ]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>
+  );
 };
 
 export default App;
