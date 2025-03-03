@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react';
 import { useNavigate } from 'react-router-dom';
-import NavigateRootOnClick from './NavigateRootOnClick';
+import NavigateRootOnClickOurside from './NavigateRootOnClickOurside';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -17,9 +17,9 @@ describe('NavigateRootOnClick', () => {
 
   it('should navigate to root when clicking outside', () => {
     render(
-      <NavigateRootOnClick>
+      <NavigateRootOnClickOurside>
         <div>Inside</div>
-      </NavigateRootOnClick>
+      </NavigateRootOnClickOurside>
     );
 
     fireEvent.mouseDown(document.body);
@@ -28,9 +28,9 @@ describe('NavigateRootOnClick', () => {
 
   it('should not navigate when clicking inside', () => {
     const { getByText } = render(
-      <NavigateRootOnClick>
+      <NavigateRootOnClickOurside>
         <div>Inside</div>
-      </NavigateRootOnClick>
+      </NavigateRootOnClickOurside>
     );
 
     fireEvent.mouseDown(getByText('Inside'));

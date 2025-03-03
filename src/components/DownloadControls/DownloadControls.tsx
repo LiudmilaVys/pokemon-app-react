@@ -3,7 +3,6 @@ import Papa from 'papaparse';
 import { useDispatch, useSelector } from 'react-redux';
 import { deselectAllPokemons } from '../../redux/pokemonReducer';
 import { AppState } from '../../redux/store';
-import './DownloadControls.css';
 
 const DownloadControls = () => {
   const dispatch = useDispatch();

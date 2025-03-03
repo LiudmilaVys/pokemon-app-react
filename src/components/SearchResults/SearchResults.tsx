@@ -1,5 +1,5 @@
+import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { deselectPokemon, selectPokemon } from '../../redux/pokemonReducer';
 import { AppState } from '../../redux/store';
 import { Pokemon } from '../../utils/types';
@@ -45,7 +45,7 @@ const SearchResults = () => {
                   checked={isChecked(pokemon)}
                   onChange={() => toggleCheckbox(pokemon)}
                 ></input>
-                <Link to={`/details/${pokemon.id}`}> {pokemon.name} </Link>
+                <Link href={`/details/${pokemon.id}`}> {pokemon.name} </Link>
               </li>
             );
           })}

@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from 'react';
+import ErrorButton from 'components/ErrorButton/ErrorButton';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Outlet } from 'react-router-dom';
 import { useGetAllQuery, useSearchByQuery } from '../../redux/pokemonApi';
 import {
   setIsLoading,
@@ -11,13 +11,18 @@ import { AppState } from '../../redux/store';
 import ThemeSwitch from '../../theme/ThemeSwitch';
 import { Pokemon } from '../../utils/types';
 import DownloadControls from '../DownloadControls/DownloadControls';
-import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
-import NavigateRootOnClick from '../NavigateRootOnClick/NavigateRootOnClick';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 
-const MainView = () => {
+const MainView = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useDispatch();
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (error) {
+      throw new Error('Test error');
+    }
+  }, [error]);
 
   const selectedPokemonCount = useSelector(
     (state: AppState) => state.pokemon.selectedPokemons.length
@@ -53,19 +58,18 @@ const MainView = () => {
   }, [loadedPokemons, isLoading, notFound, dispatch]);
 
   return (
-    <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
+    <>
       <main>
-        <NavigateRootOnClick>
+        <div>
           <ThemeSwitch></ThemeSwitch>
           <SearchBar></SearchBar>
           <SearchResults></SearchResults>
           {selectedPokemonCount > 0 && <DownloadControls></DownloadControls>}
-        </NavigateRootOnClick>
+        </div>
+        <ErrorButton onError={() => setError(true)}></ErrorButton>
       </main>
-      <aside>
-        <Outlet />
-      </aside>
-    </ErrorBoundary>
+      <aside>{children}</aside>
+    </>
   );
 };
 

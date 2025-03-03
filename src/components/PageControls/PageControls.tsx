@@ -1,14 +1,11 @@
+import { useRouter } from 'next/router';
 import { ChangeEvent, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
 import { next, prev, set } from '../../redux/paginationReducer';
 import { AppState } from '../../redux/store';
 import { ITEMS_PER_PAGE } from '../../utils/constants';
-import './PageControls.css';
 
 const PageControls = () => {
-  const dispatch = useDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = useSelector(
     (state: AppState) => state.pagination.currentPage
   );
@@ -16,12 +13,17 @@ const PageControls = () => {
     (state: AppState) => state.pokemon.pokemons.length
   );
 
+  const router = useRouter();
+  const { page } = router.query;
   useEffect(() => {
-    if (currentPage !== Number(searchParams.get('page'))) {
-      setSearchParams({ page: currentPage.toString() });
+    if (page && currentPage !== Number(page)) {
+      router.push({ pathname: '/', query: { page: currentPage } }, undefined, {
+        shallow: true,
+      });
     }
-  }, [currentPage, searchParams, setSearchParams]);
+  }, [currentPage, page, router]);
 
+  const dispatch = useDispatch();
   return (
     <div className="pokemon-list__controls">
       <button onClick={() => dispatch(prev())} disabled={currentPage === 0}>

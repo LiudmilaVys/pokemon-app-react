@@ -2,7 +2,6 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSearch } from '../../redux/pokemonReducer';
 import { AppState } from '../../redux/store';
-import './SearchBar.css';
 
 const SearchBar = () => {
   const searchQuery = useSelector((state: AppState) => state.pokemon.search);

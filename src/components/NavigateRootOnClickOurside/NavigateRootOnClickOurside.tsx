@@ -1,15 +1,18 @@
+import { useRouter } from 'next/navigation';
 import { ReactNode, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-type NavigateRootOnClickProps = { children: ReactNode };
+type NavigateRootOnClickOursideProps = { children: ReactNode };
 
-const NavigateRootOnClick = ({ children }: NavigateRootOnClickProps) => {
+const NavigateRootOnClickOurside = ({
+  children,
+}: NavigateRootOnClickOursideProps) => {
   const ref = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
+  const router = useRouter();
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (ref.current && !ref.current.contains(event.target as Node)) {
-        navigate('/');
+        router.push('/');
       }
     }
 
@@ -17,8 +20,9 @@ const NavigateRootOnClick = ({ children }: NavigateRootOnClickProps) => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [ref, navigate]);
+  }, [ref, router]);
+
   return <div ref={ref}>{children}</div>;
 };
 
-export default NavigateRootOnClick;
+export default NavigateRootOnClickOurside;

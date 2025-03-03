@@ -1,4 +1,4 @@
-@import '../../mixins.css';
+@import './mixins.css';
 
 .download-controls {
   position: fixed;
@@ -16,10 +16,12 @@
 
   text-align: center;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+  background-color: white;
 }
 
-[data-theme='dark'] .download-controls {
+.dark .download-controls {
   box-shadow: 0 -2px 10px rgba(255, 255, 255, 0.2);
+  background-color: black;
 }
 
 .download-controls__btn-group {

@@ -1,6 +1,6 @@
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useSearchByQuery } from '../../redux/pokemonApi';
 import { setDetails } from '../../redux/pokemonReducer';
 import { AppState } from '../../redux/store';
@@ -8,16 +8,18 @@ import { Pokemon } from '../../utils/types';
 import Loader from '../Loader/Loader';
 import NotFound from '../NotFound/NotFound';
 import PokemonCard from '../PokemonCard/PokemonCard';
-import './PokemonDetails.css';
 
 const PokemonDetails = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
+  const { id } = router.query;
   const dispatch = useDispatch();
 
   const pokemon = useSelector((state: AppState) => state.pokemon.details);
 
-  const { id } = useParams();
-  const { data, isFetching } = useSearchByQuery(id, { skip: !id });
+  const pokemonId = Number(id);
+  const { data, isFetching } = useSearchByQuery(pokemonId, {
+    skip: !pokemonId,
+  });
 
   useEffect(() => {
     if (data) {
@@ -29,7 +31,7 @@ const PokemonDetails = () => {
     return () => {
       dispatch(setDetails(undefined));
     };
-  }, [id, dispatch]);
+  }, [pokemonId, dispatch]);
 
   return (
     <div className="pokemon-details fade-in">
@@ -41,7 +43,7 @@ const PokemonDetails = () => {
       ) : (
         <NotFound></NotFound>
       )}
-      <button onClick={() => navigate('/')}>Close</button>
+      <button onClick={() => router.push('/')}>Close</button>
     </div>
   );
 };
