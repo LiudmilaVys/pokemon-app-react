@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
+import { useRouter } from 'next/router';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
 import useLocalStorage from '../utils/useLocalStorage';
 import store from './store';
@@ -54,14 +54,28 @@ jest.mock('../components/NotFound/NotFound', () => {
   NotFound.displayName = 'NotFound';
   return NotFound;
 });
+jest.mock('next/router', () => ({
+  ...jest.requireActual('next/router'),
+  useRouter: jest.fn(),
+}));
 
 describe('pokemonApi', () => {
+  beforeEach(() => {
+    (useRouter as jest.Mock).mockReturnValue({
+      push: jest.fn(),
+      query: {
+        page: '1',
+      },
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   it('fetches all Pokemon successfully', async () => {
     render(
       <Provider store={store}>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <App />
       </Provider>
     );
 
@@ -75,9 +89,7 @@ describe('pokemonApi', () => {
     (useLocalStorage as jest.Mock).mockReturnValue(['ditto', jest.fn()]);
     const { getByText } = render(
       <Provider store={store}>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <App />
       </Provider>
     );
 
@@ -90,9 +102,7 @@ describe('pokemonApi', () => {
     (useLocalStorage as jest.Mock).mockReturnValue(['unknown', jest.fn()]);
     const { getByText } = render(
       <Provider store={store}>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <App />
       </Provider>
     );
 

@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { ReactNode, useEffect, useRef } from 'react';
 
 type NavigateRootOnClickOursideProps = { children: ReactNode };

@@ -1,5 +1,4 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
     "types": ["@testing-library/jest-dom"],
     "jsx": "react-jsx",
@@ -15,5 +14,10 @@
     "src/**/*.test.tsx",
     "src/**/*.test.ts"
   ],
-  "exclude": ["node_modules", "build", "dist"]
+  "exclude": ["node_modules", "build", "dist"],
+  "references": [
+    {
+      "path": "./tsconfig.json"
+    }
+  ]
 }

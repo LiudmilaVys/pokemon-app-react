@@ -22,10 +22,6 @@ export const pokemonApi = createApi({
         height: number;
         weight: number;
       }) => {
-        if (response.status === 404) {
-          return { error: 'Pokemon not found!' };
-        }
-
         return {
           id: response.id,
           name: response.name,

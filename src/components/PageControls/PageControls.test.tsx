@@ -1,27 +1,29 @@
+import { EnhancedStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen } from '@testing-library/react';
+import { useRouter } from 'next/router';
 import { Provider } from 'react-redux';
-import { MemoryRouter, useSearchParams } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 import { next, prev, set } from '../../redux/paginationReducer';
-import PageControls from './PageControls';
-import { EnhancedStore } from '@reduxjs/toolkit';
 import { AppState } from '../../redux/store';
+import PageControls from './PageControls';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useSearchParams: jest.fn(),
+jest.mock('next/router', () => ({
+  ...jest.requireActual('next/router'),
+  useRouter: jest.fn(),
 }));
 
 describe('PageControls Component', () => {
   let store: EnhancedStore;
-  let setSearchParamsMock: jest.Mock;
+  let routerPushMock: jest.Mock;
 
   beforeEach(() => {
-    setSearchParamsMock = jest.fn();
-    (useSearchParams as jest.Mock).mockReturnValue([
-      new URLSearchParams({ page: '0' }),
-      setSearchParamsMock,
-    ]);
+    routerPushMock = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({
+      push: routerPushMock,
+      query: {
+        page: '1',
+      },
+    });
   });
 
   afterEach(() => {
@@ -35,9 +37,7 @@ describe('PageControls Component', () => {
 
     return render(
       <Provider store={store}>
-        <MemoryRouter>
-          <PageControls />
-        </MemoryRouter>
+        <PageControls />
       </Provider>
     );
   };
@@ -102,6 +102,12 @@ describe('PageControls Component', () => {
       pagination: { currentPage: 2 },
       pokemon: { pokemons: new Array(20) },
     } as AppState);
-    expect(setSearchParamsMock).toHaveBeenCalledWith({ page: '2' });
+    expect(routerPushMock).toHaveBeenCalledWith(
+      { pathname: '/', query: { page: 2 } },
+      undefined,
+      {
+        shallow: true,
+      }
+    );
   });
 });

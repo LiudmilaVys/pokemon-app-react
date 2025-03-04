@@ -1,7 +1,7 @@
 import { EnhancedStore } from '@reduxjs/toolkit';
 import { fireEvent, render } from '@testing-library/react';
+import { useRouter } from 'next/router';
 import { Provider } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 import { useSearchByQuery } from '../../redux/pokemonApi';
 import { setDetails } from '../../redux/pokemonReducer';
@@ -10,14 +10,15 @@ import PokemonDetails from './PokemonDetails';
 jest.mock('../../redux/pokemonApi', () => ({
   useSearchByQuery: jest.fn(),
 }));
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn(),
+jest.mock('next/router', () => ({
+  ...jest.requireActual('next/router'),
+  useRouter: jest.fn(),
 }));
 
 describe('PokemonDetails', () => {
   const mockStore = configureStore([]);
   let store: EnhancedStore;
+  let routerPushMock: jest.Mock;
 
   beforeEach(() => {
     store = mockStore({
@@ -28,6 +29,16 @@ describe('PokemonDetails', () => {
       data: null,
       isFetching: false,
     });
+
+    routerPushMock = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({
+      push: routerPushMock,
+      query: { id: '1' },
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should show loading when fetching data', () => {
@@ -85,9 +96,6 @@ describe('PokemonDetails', () => {
   });
 
   it('should navigate back when Close button is clicked', () => {
-    const navigateMock = jest.fn();
-    (useNavigate as jest.Mock).mockReturnValue(navigateMock);
-
     const { getByRole } = render(
       <Provider store={store}>
         <PokemonDetails />
@@ -97,6 +105,6 @@ describe('PokemonDetails', () => {
     const closeButton = getByRole('button', { name: 'Close' });
     fireEvent.click(closeButton);
 
-    expect(navigateMock).toHaveBeenCalledWith('/');
+    expect(routerPushMock).toHaveBeenCalledWith('/');
   });
 });

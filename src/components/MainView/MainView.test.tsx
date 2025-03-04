@@ -1,5 +1,5 @@
 import { EnhancedStore } from '@reduxjs/toolkit';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import fetchMock from 'jest-fetch-mock';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import configureStore from 'redux-mock-store';
@@ -39,12 +39,14 @@ jest.mock('../../theme/ThemeSwitch', () => {
   ThemeSwitch.displayName = 'ThemeSwitch';
   return ThemeSwitch;
 });
-jest.mock('../NavigateRootOnClick/NavigateRootOnClick', () => {
-  const NavigateRootOnClick = ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  );
-  NavigateRootOnClick.displayName = 'NavigateRootOnClick';
-  return NavigateRootOnClick;
+jest.mock('../NavigateRootOnClickOurside/NavigateRootOnClickOurside', () => {
+  const NavigateRootOnClickOurside = ({
+    children,
+  }: {
+    children: React.ReactNode;
+  }) => <div>{children}</div>;
+  NavigateRootOnClickOurside.displayName = 'NavigateRootOnClickOurside';
+  return NavigateRootOnClickOurside;
 });
 jest.mock('../ErrorBoundary/ErrorBoundary', () => {
   const ErrorBoundary = ({ children }: { children: React.ReactNode }) => (
@@ -146,5 +148,28 @@ describe('MainView', () => {
     );
 
     expect(dispatch).toHaveBeenCalledWith(setIsLoading(true));
+  });
+
+  it('handles error btn click', () => {
+    const mockUseGetAllQuery = useGetAllQuery as jest.Mock;
+    mockUseGetAllQuery.mockReturnValue({ isFetching: true, data: null });
+
+    const consoleErrorSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    render(
+      <Provider store={store}>
+        <MainView />
+      </Provider>
+    );
+
+    const button = screen.getByRole('button', { name: 'Trigger an error' });
+
+    expect(() => {
+      fireEvent.click(button);
+    }).toThrow('Test error');
+
+    consoleErrorSpy.mockRestore();
   });
 });

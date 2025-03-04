@@ -1,10 +1,15 @@
 import { EnhancedStore } from '@reduxjs/toolkit';
 import { fireEvent, render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 import { deselectPokemon, selectPokemon } from '../../redux/pokemonReducer';
 import SearchResults from './SearchResults';
+import { useRouter } from 'next/router';
+
+jest.mock('next/router', () => ({
+  ...jest.requireActual('next/router'),
+  useRouter: jest.fn(),
+}));
 
 describe('SearchResults', () => {
   const mockStore = configureStore([]);
@@ -27,6 +32,15 @@ describe('SearchResults', () => {
       },
     });
     store.dispatch = jest.fn();
+
+    (useRouter as jest.Mock).mockReturnValue({
+      push: jest.fn(),
+      query: { page: '1' },
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should show loading when isLoading is true', () => {
@@ -41,9 +55,7 @@ describe('SearchResults', () => {
 
     const { getByText } = render(
       <Provider store={store}>
-        <MemoryRouter>
-          <SearchResults />
-        </MemoryRouter>
+        <SearchResults />
       </Provider>
     );
 
@@ -62,9 +74,7 @@ describe('SearchResults', () => {
 
     const { getByText } = render(
       <Provider store={store}>
-        <MemoryRouter>
-          <SearchResults />
-        </MemoryRouter>
+        <SearchResults />
       </Provider>
     );
 
@@ -74,9 +84,7 @@ describe('SearchResults', () => {
   it('should render list of pokemons', () => {
     const { getByText } = render(
       <Provider store={store}>
-        <MemoryRouter>
-          <SearchResults />
-        </MemoryRouter>
+        <SearchResults />
       </Provider>
     );
 
@@ -87,9 +95,7 @@ describe('SearchResults', () => {
   it('should dispatch selectPokemon action when checkbox is checked', () => {
     const { getAllByRole } = render(
       <Provider store={store}>
-        <MemoryRouter>
-          <SearchResults />
-        </MemoryRouter>
+        <SearchResults />
       </Provider>
     );
 
@@ -118,9 +124,7 @@ describe('SearchResults', () => {
 
     const { getByRole } = render(
       <Provider store={store}>
-        <MemoryRouter>
-          <SearchResults />
-        </MemoryRouter>
+        <SearchResults />
       </Provider>
     );
     const checkbox = getByRole('checkbox');

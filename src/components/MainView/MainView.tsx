@@ -1,4 +1,4 @@
-import ErrorButton from 'components/ErrorButton/ErrorButton';
+import ErrorButton from '../ErrorButton/ErrorButton';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetAllQuery, useSearchByQuery } from '../../redux/pokemonApi';
@@ -14,7 +14,7 @@ import DownloadControls from '../DownloadControls/DownloadControls';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 
-const MainView = ({ children }: { children: React.ReactNode }) => {
+const MainView = ({ children }: { children?: React.ReactNode }) => {
   const dispatch = useDispatch();
   const [error, setError] = useState(false);
 

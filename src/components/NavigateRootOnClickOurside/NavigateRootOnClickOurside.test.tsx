@@ -1,18 +1,22 @@
 import { fireEvent, render } from '@testing-library/react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import NavigateRootOnClickOurside from './NavigateRootOnClickOurside';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn(),
+jest.mock('next/router', () => ({
+  ...jest.requireActual('next/router'),
+  useRouter: jest.fn(),
 }));
 
 describe('NavigateRootOnClick', () => {
-  let navigateMock: jest.Mock;
+  let routerPushMock: jest.Mock;
 
   beforeEach(() => {
-    navigateMock = jest.fn();
-    (useNavigate as jest.Mock).mockReturnValue(navigateMock);
+    routerPushMock = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({ push: routerPushMock });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should navigate to root when clicking outside', () => {
@@ -23,7 +27,7 @@ describe('NavigateRootOnClick', () => {
     );
 
     fireEvent.mouseDown(document.body);
-    expect(navigateMock).toHaveBeenCalledWith('/');
+    expect(routerPushMock).toHaveBeenCalledWith('/');
   });
 
   it('should not navigate when clicking inside', () => {
@@ -34,6 +38,6 @@ describe('NavigateRootOnClick', () => {
     );
 
     fireEvent.mouseDown(getByText('Inside'));
-    expect(navigateMock).not.toHaveBeenCalled();
+    expect(routerPushMock).not.toHaveBeenCalled();
   });
 });

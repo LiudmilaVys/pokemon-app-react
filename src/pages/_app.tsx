@@ -10,10 +10,10 @@ import '../styles/PokemonCard.css';
 import '../styles/PokemonDetails.css';
 import '../styles/SearchBar.css';
 
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
 import { AppProps } from 'next/app';
-import ThemeContext from 'theme/ThemeContext';
-import ThemeProvider from 'theme/ThemeProvider';
+import ThemeContext from '../theme/ThemeContext';
+import ThemeProvider from '../theme/ThemeProvider';
 import store from '../redux/store';
 
 function MyApp({ Component, pageProps }: AppProps) {
