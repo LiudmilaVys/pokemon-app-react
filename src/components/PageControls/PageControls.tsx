@@ -16,7 +16,7 @@ const PageControls = () => {
   const router = useRouter();
   const { page } = router.query;
   useEffect(() => {
-    if (page && currentPage !== Number(page)) {
+    if (router.pathname == '/' && currentPage !== Number(page)) {
       router.push({ pathname: '/', query: { page: currentPage } }, undefined, {
         shallow: true,
       });

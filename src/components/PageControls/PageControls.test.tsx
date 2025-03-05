@@ -23,6 +23,7 @@ describe('PageControls Component', () => {
       query: {
         page: '1',
       },
+      pathname: '/',
     });
   });
 
