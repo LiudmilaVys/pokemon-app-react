@@ -1,9 +1,11 @@
-import { Html, Head, Main, NextScript } from 'next/document';
+import './layout.css';
 
-export default function Document() {
+import { ReactNode } from 'react';
+
+export default function IndexLayout({ children }: { children: ReactNode }) {
   return (
-    <Html lang="en">
-      <Head>
+    <html lang="en">
+      <head>
         <meta charSet="UTF-8" />
         <link
           rel="icon"
@@ -13,11 +15,8 @@ export default function Document() {
         />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Pokemon App</title>
-      </Head>
-      <body>
-        <Main /> {/* Next.js injects page content here */}
-        <NextScript /> {/* Next.js scripts */}
-      </body>
-    </Html>
+      </head>
+      <body>{children}</body>
+    </html>
   );
 }

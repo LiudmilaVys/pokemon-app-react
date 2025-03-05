@@ -1,4 +1,6 @@
-import { useRouter } from 'next/router';
+import './PokemonDetails.css';
+
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchByQuery } from '../../redux/pokemonApi';
@@ -11,7 +13,8 @@ import PokemonCard from '../PokemonCard/PokemonCard';
 
 const PokemonDetails = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const params = useParams();
+  const id = params.id;
   const dispatch = useDispatch();
 
   const pokemon = useSelector((state: AppState) => state.pokemon.details);

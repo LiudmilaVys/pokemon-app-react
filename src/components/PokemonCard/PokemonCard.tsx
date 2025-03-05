@@ -1,3 +1,5 @@
+import './PokemonCard.css';
+
 import { Pokemon } from '../../utils/types';
 
 type PokemonCardProps = { pokemon: Pokemon | undefined };

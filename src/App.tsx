@@ -1,3 +1,5 @@
+import './App.css';
+
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import MainView from './components/MainView/MainView';

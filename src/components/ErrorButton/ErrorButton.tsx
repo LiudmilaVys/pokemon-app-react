@@ -1,3 +1,5 @@
+import './ErrorButton.css';
+
 type ErrorButtonProps = { onError: () => void };
 
 const ErrorButton = ({ onError }: ErrorButtonProps) => {

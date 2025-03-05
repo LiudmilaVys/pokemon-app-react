@@ -6,10 +6,12 @@ import configureStore from 'redux-mock-store';
 import { next, prev, set } from '../../redux/paginationReducer';
 import { AppState } from '../../redux/store';
 import PageControls from './PageControls';
+import { useSearchParams } from 'next/navigation';
 
 jest.mock('next/router', () => ({
   ...jest.requireActual('next/router'),
   useRouter: jest.fn(),
+  useSearchParams: jest.fn(),
 }));
 
 describe('PageControls Component', () => {
@@ -18,12 +20,8 @@ describe('PageControls Component', () => {
 
   beforeEach(() => {
     routerPushMock = jest.fn();
-    (useRouter as jest.Mock).mockReturnValue({
-      push: routerPushMock,
-      query: {
-        page: '1',
-      },
-    });
+    (useRouter as jest.Mock).mockReturnValue({ push: routerPushMock });
+    (useSearchParams as jest.Mock).mockReturnValue({ get: () => '1' });
   });
 
   afterEach(() => {

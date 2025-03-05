@@ -1,6 +1,6 @@
 import { EnhancedStore } from '@reduxjs/toolkit';
 import { fireEvent, render } from '@testing-library/react';
-import { useRouter } from 'next/router';
+import { useParams, useRouter } from 'next/navigation';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { useSearchByQuery } from '../../redux/pokemonApi';
@@ -10,9 +10,10 @@ import PokemonDetails from './PokemonDetails';
 jest.mock('../../redux/pokemonApi', () => ({
   useSearchByQuery: jest.fn(),
 }));
-jest.mock('next/router', () => ({
-  ...jest.requireActual('next/router'),
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
   useRouter: jest.fn(),
+  useParams: jest.fn(),
 }));
 
 describe('PokemonDetails', () => {
@@ -31,10 +32,8 @@ describe('PokemonDetails', () => {
     });
 
     routerPushMock = jest.fn();
-    (useRouter as jest.Mock).mockReturnValue({
-      push: routerPushMock,
-      query: { id: '1' },
-    });
+    (useRouter as jest.Mock).mockReturnValue({ push: routerPushMock });
+    (useParams as jest.Mock).mockReturnValue({ id: '1' });
   });
 
   afterEach(() => {

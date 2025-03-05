@@ -1,9 +1,9 @@
 import { fireEvent, render } from '@testing-library/react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import NavigateRootOnClickOurside from './NavigateRootOnClickOurside';
 
-jest.mock('next/router', () => ({
-  ...jest.requireActual('next/router'),
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
   useRouter: jest.fn(),
 }));
 

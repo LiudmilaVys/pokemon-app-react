@@ -1,22 +1,13 @@
-import { Provider } from 'react-redux';
-import '../styles/App.css';
-import '../styles/DownloadControls.css';
-import '../styles/ErrorButton.css';
-import '../styles/index.css';
-import '../styles/Loader.css';
-import '../styles/mixins.css';
-import '../styles/PageControls.css';
-import '../styles/PokemonCard.css';
-import '../styles/PokemonDetails.css';
-import '../styles/SearchBar.css';
+'use client';
 
+import { Provider } from 'react-redux';
+import App from '../App';
 import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
-import { AppProps } from 'next/app';
+import store from '../redux/store';
 import ThemeContext from '../theme/ThemeContext';
 import ThemeProvider from '../theme/ThemeProvider';
-import store from '../redux/store';
 
-function MyApp({ Component, pageProps }: AppProps) {
+export default function IndexPage() {
   return (
     <Provider store={store}>
       <ThemeProvider>
@@ -27,7 +18,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             return (
               <ErrorBoundary fallback={<p>Oops.. Something went wrong</p>}>
                 <div className={theme} id="body">
-                  <Component {...pageProps} />
+                  <App />
                 </div>
               </ErrorBoundary>
             );
@@ -37,5 +28,3 @@ function MyApp({ Component, pageProps }: AppProps) {
     </Provider>
   );
 }
-
-export default MyApp;

@@ -1,3 +1,5 @@
+import './DownloadControls.css';
+
 import { saveAs } from 'file-saver';
 import Papa from 'papaparse';
 import { useDispatch, useSelector } from 'react-redux';

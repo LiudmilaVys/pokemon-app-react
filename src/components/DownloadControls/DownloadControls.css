@@ -1,4 +1,4 @@
-@import './mixins.css';
+@import '../../../mixins.css';
 
 .download-controls {
   position: fixed;
