@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Provider } from 'react-redux';
 import App from '../App';
 import useLocalStorage from '../utils/useLocalStorage';
@@ -54,19 +54,16 @@ jest.mock('../components/NotFound/NotFound', () => {
   NotFound.displayName = 'NotFound';
   return NotFound;
 });
-jest.mock('next/router', () => ({
-  ...jest.requireActual('next/router'),
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
   useRouter: jest.fn(),
+  useSearchParams: jest.fn(),
 }));
 
 describe('pokemonApi', () => {
   beforeEach(() => {
-    (useRouter as jest.Mock).mockReturnValue({
-      push: jest.fn(),
-      query: {
-        page: '1',
-      },
-    });
+    (useRouter as jest.Mock).mockReturnValue({ push: jest.fn() });
+    (useSearchParams as jest.Mock).mockReturnValue({ get: () => '1' });
   });
 
   afterEach(() => {

@@ -4,12 +4,12 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { deselectPokemon, selectPokemon } from '../../redux/pokemonReducer';
 import SearchResults from './SearchResults';
-import { useRouter } from 'next/router';
 
-jest.mock('next/router', () => ({
-  ...jest.requireActual('next/router'),
-  useRouter: jest.fn(),
-}));
+jest.mock('../PageControls/PageControls', () => {
+  const PageControls = () => <div>PageControls</div>;
+  PageControls.displayName = 'PageControls';
+  return PageControls;
+});
 
 describe('SearchResults', () => {
   const mockStore = configureStore([]);
@@ -32,11 +32,6 @@ describe('SearchResults', () => {
       },
     });
     store.dispatch = jest.fn();
-
-    (useRouter as jest.Mock).mockReturnValue({
-      push: jest.fn(),
-      query: { page: '1' },
-    });
   });
 
   afterEach(() => {

@@ -1,17 +1,17 @@
 import { EnhancedStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { useRouter } from 'next/router';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { next, prev, set } from '../../redux/paginationReducer';
 import { AppState } from '../../redux/store';
 import PageControls from './PageControls';
-import { useSearchParams } from 'next/navigation';
 
-jest.mock('next/router', () => ({
-  ...jest.requireActual('next/router'),
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
   useRouter: jest.fn(),
   useSearchParams: jest.fn(),
+  usePathname: jest.fn(),
 }));
 
 describe('PageControls Component', () => {
@@ -22,6 +22,7 @@ describe('PageControls Component', () => {
     routerPushMock = jest.fn();
     (useRouter as jest.Mock).mockReturnValue({ push: routerPushMock });
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => '1' });
+    (usePathname as jest.Mock).mockReturnValue('/');
   });
 
   afterEach(() => {
@@ -100,12 +101,11 @@ describe('PageControls Component', () => {
       pagination: { currentPage: 2 },
       pokemon: { pokemons: new Array(20) },
     } as AppState);
-    expect(routerPushMock).toHaveBeenCalledWith(
-      { pathname: '/', query: { page: 2 } },
-      undefined,
-      {
-        shallow: true,
-      }
-    );
+
+    const params = new URLSearchParams({
+      get: () => '1',
+    } as unknown as URLSearchParams);
+    params.set('page', '2');
+    expect(routerPushMock).toHaveBeenCalledWith(`/?${params.toString()}`);
   });
 });

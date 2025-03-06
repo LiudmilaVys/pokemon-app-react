@@ -1,6 +1,6 @@
 import './PageControls.css';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { next, prev, set } from '../../redux/paginationReducer';
@@ -18,14 +18,15 @@ const PageControls = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const page = searchParams.get('page');
+  const pathname = usePathname();
   useEffect(() => {
-    if (page && currentPage !== Number(page)) {
+    if (pathname == '/' && currentPage !== Number(page)) {
       const params = new URLSearchParams(searchParams);
 
       params.set('page', currentPage.toString());
       router.push(`/?${params.toString()}`);
     }
-  }, [currentPage, page, router, searchParams]);
+  }, [currentPage, page, router, searchParams, pathname]);
 
   const dispatch = useDispatch();
   return (
