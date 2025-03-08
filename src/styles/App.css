@@ -1,0 +1,10 @@
+main {
+  display: flex;
+  justify-content: center;
+}
+
+aside {
+  position: absolute;
+  top: 20vh;
+  left: 70vw;
+}

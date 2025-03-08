@@ -1,51 +1,38 @@
-import { localStorageKey } from '../../utils/constants';
-import './SearchBar.css';
-import { ChangeEvent, Component, ReactNode } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSearch } from '../../redux/pokemonReducer';
+import { AppState } from '../../redux/store';
 
-type SearchBarProps = { onSearchSubmit: (value: string | null) => void };
-type SearchBarState = { searchValue: string | null };
+const SearchBar = () => {
+  const searchQuery = useSelector((state: AppState) => state.pokemon.search);
+  const dispatch = useDispatch();
+  const [input, setInput] = useState(searchQuery);
 
-export default class SearchBar extends Component<
-  SearchBarProps,
-  SearchBarState
-> {
-  constructor(props: SearchBarProps) {
-    super(props);
+  useEffect(() => {
+    setInput(searchQuery);
+  }, [searchQuery]);
 
-    this.handleSearchChange = this.handleSearchChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      dispatch(setSearch((event.target as HTMLInputElement).value));
+    }
+  };
 
-    this.state = {
-      searchValue: '',
-    };
-  }
+  return (
+    <div className="search-bar">
+      <input
+        type="text"
+        placeholder="ditto"
+        className="search-bar__input"
+        value={input}
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          setInput(e.target.value)
+        }
+        onKeyDown={handleKeyDown}
+      />
+      <button onClick={() => dispatch(setSearch(input))}>Search</button>
+    </div>
+  );
+};
 
-  componentDidMount() {
-    const searchValue = localStorage.getItem(localStorageKey);
-    this.setState({ searchValue }, this.handleSubmit);
-  }
-
-  handleSearchChange(e: ChangeEvent<HTMLInputElement>): void {
-    this.setState({ searchValue: e.target.value });
-  }
-
-  handleSubmit(): void {
-    this.props.onSearchSubmit(this.state.searchValue);
-    localStorage.setItem(localStorageKey, this.state.searchValue || '');
-  }
-
-  render(): ReactNode {
-    return (
-      <div className="search-bar">
-        <input
-          type="text"
-          placeholder="ditto"
-          className="search-bar__input"
-          value={this.state?.searchValue ?? ''}
-          onChange={this.handleSearchChange}
-        />
-        <input type="button" value="Search" onClick={this.handleSubmit} />
-      </div>
-    );
-  }
-}
+export default SearchBar;

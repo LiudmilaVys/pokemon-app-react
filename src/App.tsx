@@ -1,76 +1,27 @@
-import { Component } from 'react';
-import './App.css';
-import ErrorButton from './components/ErrorButton/ErrorButton';
-import PokemonList from './components/PokemonList/PokemonList';
-import SearchBar from './components/SearchBar/SearchBar';
-import * as pokemonService from './services/pokemonService';
-import Loader from './utils/Loader/Loader';
-import { Pokemon } from './utils/types';
-import { parsePokemonsResponse } from './utils/utils';
-import { ErrorBoundary } from './utils/ErrorBoundary/ErrorBoundary';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import MainView from './components/MainView/MainView';
+import { setSearch } from './redux/pokemonReducer';
+import { AppState } from './redux/store';
+import { SEARCH_VALUE_KEY } from './utils/constants';
+import useLocalStorage from './utils/useLocalStorage';
 
-type AppState = { pokemons: Pokemon[]; isLoading: boolean; isError: boolean };
+const App = ({ children }: { children?: React.ReactNode }) => {
+  const [savedSearchQuery, setSavedSearchQuery] = useLocalStorage(
+    SEARCH_VALUE_KEY,
+    ''
+  );
+  const searchQuery = useSelector((state: AppState) => state.pokemon.search);
+  const dispatch = useDispatch();
 
-export default class App extends Component<unknown, AppState> {
-  constructor(props: unknown) {
-    super(props);
+  useEffect(() => {
+    dispatch(setSearch(savedSearchQuery));
+  }, [savedSearchQuery, dispatch]);
+  useEffect(() => {
+    setSavedSearchQuery(searchQuery);
+  }, [searchQuery, setSavedSearchQuery]);
 
-    this.state = {
-      pokemons: [],
-      isLoading: false,
-      isError: false,
-    };
-  }
+  return <MainView>{children}</MainView>;
+};
 
-  submitSearch = async (searchValue: string | null) => {
-    this.setState({ isLoading: true, isError: false }, async () => {
-      if (searchValue) {
-        const pokemonResp = await pokemonService.searchBy(searchValue);
-
-        this.setState({
-          pokemons: [
-            {
-              id: pokemonResp.id,
-              name: pokemonResp.name,
-              height: pokemonResp.height,
-              weight: pokemonResp.weight,
-            },
-          ],
-          isLoading: false,
-        });
-      } else {
-        const pokemonsResp = await pokemonService.getAll();
-        const pokemons = parsePokemonsResponse(pokemonsResp);
-
-        this.setState({ pokemons, isLoading: false });
-      }
-    });
-  };
-
-  onErrorHandler = () => {
-    this.setState({ isError: !this.state.isError });
-  };
-
-  render() {
-    return (
-      <>
-        <SearchBar onSearchSubmit={this.submitSearch}></SearchBar>
-        <main>
-          {this.state.isLoading ? (
-            <Loader></Loader>
-          ) : (
-            <>
-              <ErrorBoundary fallback={<p>Oops.. Please update search</p>}>
-                <PokemonList
-                  pokemons={this.state?.pokemons}
-                  generateAnError={this.state.isError}
-                ></PokemonList>
-              </ErrorBoundary>
-            </>
-          )}
-        </main>
-        <ErrorButton onError={this.onErrorHandler}></ErrorButton>
-      </>
-    );
-  }
-}
+export default App;
