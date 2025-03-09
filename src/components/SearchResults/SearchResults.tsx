@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { deselectPokemon, selectPokemon } from '../../redux/pokemonReducer';
 import { AppState } from '../../redux/store';
@@ -50,7 +51,11 @@ const SearchResults = () => {
             );
           })}
         </ul>
-        {!searchQuery && <PageControls></PageControls>}
+        {!searchQuery && (
+          <Suspense fallback={<Loader></Loader>}>
+            <PageControls></PageControls>
+          </Suspense>
+        )}
       </>
     );
   };
